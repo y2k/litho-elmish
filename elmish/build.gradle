@@ -1,0 +1,36 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+
+android {
+    compileSdkVersion 26
+    buildToolsVersion "26.0.2"
+
+    defaultConfig {
+        minSdkVersion 15
+        targetSdkVersion 26
+        versionCode 1
+        versionName "1.0"
+    }
+}
+
+dependencies {
+    testCompile 'junit:junit:4.12'
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+
+    def lithoVersion = '0.6.1'
+    provided "com.facebook.litho:litho-core:$lithoVersion"
+    provided "com.facebook.litho:litho-widget:$lithoVersion"
+
+    def coroutinesVersion = '0.19.1'
+    provided "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
+    provided "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
+    provided "com.facebook.litho:litho-annotations:$lithoVersion"
+}
+repositories {
+    mavenCentral()
+}
+kotlin {
+    experimental {
+        coroutines "enable"
+    }
+}
