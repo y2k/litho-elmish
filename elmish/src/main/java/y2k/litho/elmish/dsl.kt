@@ -7,6 +7,7 @@ import com.facebook.litho.widget.Recycler
 import com.facebook.litho.widget.Text
 
 typealias Contextual<T> = (ComponentContext) -> T
+typealias LazyComponent = Contextual<ComponentLayout.Builder>
 
 fun textL(f: Text.Builder.() -> Unit): Contextual<ComponentLayout.Builder> =
     { context -> Text.create(context).also(f).withLayout() }
@@ -28,6 +29,9 @@ fun ContainerBuilder.child(cb: Contextual<ComponentLayout>) {
 
 fun column(f: ContainerBuilder.() -> Unit): Contextual<ComponentLayout> =
     { context -> Column.create(context).apply(f).build() }
+
+fun columnL(f: ContainerBuilder.() -> Unit): Contextual<ComponentLayout.Builder> =
+    { context -> Column.create(context).apply(f) }
 
 fun recycler(f: Recycler.Builder.() -> Unit): Contextual<ComponentLayout> =
     { context -> Recycler.create(context).apply(f).buildWithLayout() }
