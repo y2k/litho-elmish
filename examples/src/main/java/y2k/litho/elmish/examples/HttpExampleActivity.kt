@@ -6,11 +6,13 @@ import com.facebook.litho.ComponentLayout
 import y2k.litho.elmish.*
 import y2k.litho.elmish.examples.Domain.WAITING_GIF
 import y2k.litho.elmish.examples.Domain.getRandomGif
+import y2k.litho.elmish.examples.HttpExample.Model
+import y2k.litho.elmish.examples.HttpExample.Msg
 import y2k.litho.elmish.examples.HttpExample.Msg.MorePlease
 import y2k.litho.elmish.examples.HttpExample.Msg.NewGif
 import y2k.litho.elmish.examples.common.*
 
-object HttpExample : ElmFunctions<HttpExample.Model, HttpExample.Msg> {
+object HttpExample : ElmFunctions<Model, Msg> {
 
     data class Model(val topic: String, val gifUrl: String)
     sealed class Msg {
@@ -53,7 +55,7 @@ object HttpExample : ElmFunctions<HttpExample.Model, HttpExample.Msg> {
 
 private object Domain {
 
-    fun getRandomGif(topic: String): Cmd<HttpExample.Msg> {
+    fun getRandomGif(topic: String): Cmd<Msg> {
         val url = "https://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag=$topic"
         return Http.send(::NewGif, Http.get(url, decodeGifUrl()))
     }
