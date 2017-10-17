@@ -4,8 +4,10 @@ Port of Elm architecture to Kotlin with Litho
 
 # Simple example
 
+Port from: http://elm-lang.org/examples/buttons
+
 ```kotlin
-object Screen : ElmFunctions<Int, Screen.Msg> {
+object Screen : ElmFunctions<Int, Msg> {
 
     enum class Msg { Increase, Decrease }
 

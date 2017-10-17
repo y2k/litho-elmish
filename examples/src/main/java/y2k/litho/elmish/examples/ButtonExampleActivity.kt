@@ -6,13 +6,16 @@ import y2k.litho.elmish.*
 import y2k.litho.elmish.examples.ButtonExample.Msg.Decrease
 import y2k.litho.elmish.examples.ButtonExample.Msg.Increase
 
+/**
+ * Elm origin: http://elm-lang.org/examples/buttons
+ */
 object ButtonExample : ElmFunctions<Int, ButtonExample.Msg> {
 
     enum class Msg { Increase, Decrease }
 
-    override fun init(): P<Int, Msg> = 0 to Cmd.none()
+    override fun init(): Pair<Int, Cmd<Msg>> = 0 to Cmd.none()
 
-    override fun update(model: Int, msg: Msg): P<Int, Msg> = when (msg) {
+    override fun update(model: Int, msg: Msg): Pair<Int, Cmd<Msg>> = when (msg) {
         Increase -> (model + 1) to Cmd.none()
         Decrease -> (model - 1) to Cmd.none()
     }

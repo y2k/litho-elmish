@@ -2,7 +2,6 @@ package y2k.litho.elmish.examples
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import com.facebook.litho.ComponentLayout
 import y2k.litho.elmish.*
 import y2k.litho.elmish.examples.Domain.WAITING_GIF
 import y2k.litho.elmish.examples.Domain.getRandomGif
@@ -12,6 +11,9 @@ import y2k.litho.elmish.examples.HttpExample.Msg.MorePlease
 import y2k.litho.elmish.examples.HttpExample.Msg.NewGif
 import y2k.litho.elmish.examples.common.*
 
+/**
+ * Elm origin: http://elm-lang.org/examples/http
+ */
 object HttpExample : ElmFunctions<Model, Msg> {
 
     data class Model(val topic: String, val gifUrl: String)
@@ -33,7 +35,7 @@ object HttpExample : ElmFunctions<Model, Msg> {
         }
     }
 
-    override fun view(model: Model): Contextual<ComponentLayout.Builder> =
+    override fun view(model: Model) =
         column {
             childText {
                 text(model.topic)

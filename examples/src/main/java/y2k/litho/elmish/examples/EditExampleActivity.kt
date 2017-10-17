@@ -5,6 +5,9 @@ import android.support.v7.app.AppCompatActivity
 import y2k.litho.elmish.*
 import y2k.litho.elmish.examples.EditExample.Msg
 
+/**
+ * Elm origin: http://elm-lang.org/examples/field
+ */
 object EditExample : ElmFunctions<String, Msg> {
 
     class Msg(val value: String)
