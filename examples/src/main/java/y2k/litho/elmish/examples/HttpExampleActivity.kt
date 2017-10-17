@@ -1,13 +1,14 @@
-package com.example.examples
+package y2k.litho.elmish.examples
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import com.example.examples.Domain.WAITING_GIF
-import com.example.examples.Domain.getRandomGif
-import com.example.examples.HttpExample.Msg.MorePlease
-import com.example.examples.HttpExample.Msg.NewGif
 import com.facebook.litho.ComponentLayout
 import y2k.litho.elmish.*
+import y2k.litho.elmish.examples.Domain.WAITING_GIF
+import y2k.litho.elmish.examples.Domain.getRandomGif
+import y2k.litho.elmish.examples.HttpExample.Msg.MorePlease
+import y2k.litho.elmish.examples.HttpExample.Msg.NewGif
+import y2k.litho.elmish.examples.common.*
 
 object HttpExample : ElmFunctions<HttpExample.Model, HttpExample.Msg> {
 

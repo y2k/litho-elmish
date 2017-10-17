@@ -1,4 +1,4 @@
-package com.example.examples
+package y2k.litho.elmish.examples.common
 
 import android.app.Application
 import android.os.AsyncTask.THREAD_POOL_EXECUTOR

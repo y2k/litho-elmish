@@ -1,12 +1,12 @@
-package com.example.examples
+package y2k.litho.elmish.examples
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import com.example.examples.Example1Screen.Msg.Decrease
-import com.example.examples.Example1Screen.Msg.Increase
 import y2k.litho.elmish.*
+import y2k.litho.elmish.examples.ButtonExample.Msg.Decrease
+import y2k.litho.elmish.examples.ButtonExample.Msg.Increase
 
-object Example1Screen : ElmFunctions<Int, Example1Screen.Msg> {
+object ButtonExample : ElmFunctions<Int, ButtonExample.Msg> {
 
     enum class Msg { Increase, Decrease }
 
@@ -36,10 +36,10 @@ object Example1Screen : ElmFunctions<Int, Example1Screen.Msg> {
         }
 }
 
-class MainActivity : AppCompatActivity() {
+class ButtonExampleActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        program(Example1Screen)
+        program(ButtonExample)
     }
 }
