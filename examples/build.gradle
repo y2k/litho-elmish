@@ -42,6 +42,9 @@ dependencies {
     // Optional
     // For integration with Fresco
     compile "com.facebook.litho:litho-fresco:$lithoVersion"
+    // For animated GIF support
+    compile 'com.facebook.fresco:animated-gif:1.5.0'
+
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
 
     def coroutinesVersion = '0.19.1'
@@ -50,4 +53,9 @@ dependencies {
 }
 repositories {
     mavenCentral()
+}
+kotlin {
+    experimental {
+        coroutines "enable"
+    }
 }

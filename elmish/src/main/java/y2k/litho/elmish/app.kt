@@ -3,6 +3,8 @@ package y2k.litho.elmish
 import android.app.Activity
 import com.facebook.litho.*
 import com.facebook.litho.annotations.*
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.launch
 
 fun <TModel, TMsg> Activity.program(functions: ElmFunctions<TModel, TMsg>) {
     @Suppress("UNCHECKED_CAST")
@@ -53,8 +55,14 @@ class ElmishApplicationSpec {
         @OnEvent(ClickEvent::class)
         @JvmStatic
         fun onEventHandle(c: ComponentContext, @Param msg: Any, @State model: ElmProvider) {
-            val (model2, _) = model.functions.update(model.subModel, msg)
-            ElmishApplication.reload(c, model2)
+            launch(UI) {
+                val (model2, cmd2) = model.functions.update(model.subModel, msg)
+                ElmishApplication.reload(c, model2)
+
+                val msg2 = cmd2.handle() ?: return@launch
+                val (model3, _) = model.functions.update(model.subModel, msg2)
+                ElmishApplication.reload(c, model3)
+            }
         }
     }
 }

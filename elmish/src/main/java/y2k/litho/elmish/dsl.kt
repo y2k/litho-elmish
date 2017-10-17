@@ -1,7 +1,10 @@
 package y2k.litho.elmish
 
+import com.facebook.drawee.backends.pipeline.Fresco
+import com.facebook.drawee.backends.pipeline.PipelineDraweeControllerBuilder
 import com.facebook.litho.*
 import com.facebook.litho.ComponentLayout.ContainerBuilder
+import com.facebook.litho.fresco.FrescoImage
 import com.facebook.litho.widget.Progress
 import com.facebook.litho.widget.Recycler
 import com.facebook.litho.widget.Text
@@ -10,6 +13,14 @@ import com.facebook.litho.widget.innerContext
 typealias Contextual<T> = (ComponentContext) -> T
 typealias LazyComponent = Contextual<ComponentLayout.Builder>
 typealias P<TModel, TMsg> = Pair<TModel, Cmd<TMsg>>
+
+inline fun FrescoImage.Builder.fresco(f: PipelineDraweeControllerBuilder.() -> Unit) {
+    controller(
+        Fresco
+            .newDraweeControllerBuilder()
+            .also(f)
+            .build())
+}
 
 fun Text.Builder.onClick(layout: LayoutFuncCallback, msg: Any) {
     val ctx = innerContext
@@ -43,6 +54,10 @@ fun ComponentLayout.ContainerBuilder.childText(f: Text.Builder.(LayoutFuncCallba
     child(text(f))
 }
 
+fun ComponentLayout.ContainerBuilder.childFresco(f: FrescoImage.Builder.() -> Unit) {
+    child(fresco(f))
+}
+
 fun ContainerBuilder.childBuilder(cb: Contextual<Component.Builder<*, *>>) {
     child(cb.invoke(innerContext))
 }
@@ -59,6 +74,9 @@ fun column(f: ContainerBuilder.() -> Unit): Contextual<ComponentLayout.Builder> 
 
 fun recycler(f: Recycler.Builder.() -> Unit): Contextual<ComponentLayout> =
     { context -> Recycler.create(context).apply(f).buildWithLayout() }
+
+fun fresco(f: FrescoImage.Builder.() -> Unit): Contextual<ComponentLayout.Builder> =
+    { context -> FrescoImage.create(context).apply(f).withLayout() }
 
 fun recyclerBuilder(f: Recycler.Builder.() -> Unit): Contextual<Recycler.Builder> =
     { context -> Recycler.create(context).apply(f) }
