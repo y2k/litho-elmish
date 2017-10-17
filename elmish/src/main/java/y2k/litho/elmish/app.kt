@@ -3,6 +3,7 @@ package y2k.litho.elmish
 import android.app.Activity
 import com.facebook.litho.*
 import com.facebook.litho.annotations.*
+import com.facebook.litho.widget.TextChangedEvent
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 
@@ -56,6 +57,21 @@ class ElmishApplicationSpec {
         @JvmStatic
         fun onEventHandle(c: ComponentContext, @Param msg: Any, @State model: ElmProvider) {
             launch(UI) {
+                val (model2, cmd2) = model.functions.update(model.subModel, msg)
+                ElmishApplication.reload(c, model2)
+
+                val msg2 = cmd2.handle() ?: return@launch
+                val (model3, _) = model.functions.update(model.subModel, msg2)
+                ElmishApplication.reload(c, model3)
+            }
+        }
+
+        @OnEvent(TextChangedEvent::class)
+        @JvmStatic
+        fun onTextChanged(c: ComponentContext, @FromEvent text: String, @Param msgFactory: (String) -> Any, @State model: ElmProvider) {
+            launch(UI) {
+                val msg = msgFactory(text)
+
                 val (model2, cmd2) = model.functions.update(model.subModel, msg)
                 ElmishApplication.reload(c, model2)
 

@@ -5,10 +5,7 @@ import com.facebook.drawee.backends.pipeline.PipelineDraweeControllerBuilder
 import com.facebook.litho.*
 import com.facebook.litho.ComponentLayout.ContainerBuilder
 import com.facebook.litho.fresco.FrescoImage
-import com.facebook.litho.widget.Progress
-import com.facebook.litho.widget.Recycler
-import com.facebook.litho.widget.Text
-import com.facebook.litho.widget.innerContext
+import com.facebook.litho.widget.*
 
 typealias Contextual<T> = (ComponentContext) -> T
 typealias LazyComponent = Contextual<ComponentLayout.Builder>
@@ -22,12 +19,19 @@ inline fun FrescoImage.Builder.fresco(f: PipelineDraweeControllerBuilder.() -> U
             .build())
 }
 
+fun EditText.Builder.onTextChanged(msgFactory: (String) -> Any) {
+    textChangedEventHandler(ElmishApplication.onTextChanged(innerContext, msgFactory))
+}
+
 fun Text.Builder.onClick(layout: LayoutFuncCallback, msg: Any) {
     val ctx = innerContext
     layout {
         clickHandler(ElmishApplication.onEventHandle(ctx, msg))
     }
 }
+
+fun editText(f: EditText.Builder.() -> Unit): Contextual<ComponentLayout.Builder> =
+    { context -> EditText.create(context).also(f).withLayout() }
 
 fun text(f: Text.Builder.(LayoutFuncCallback) -> Unit): Contextual<ComponentLayout.Builder> {
     return { context ->
@@ -48,6 +52,10 @@ fun recyclerL(f: Recycler.Builder.() -> Unit): Contextual<ComponentLayout.Builde
 
 fun ComponentLayout.ContainerBuilder.child(c: Contextual<ComponentLayout.Builder>) {
     child(c(innerContext))
+}
+
+fun ComponentLayout.ContainerBuilder.childEditText(f: EditText.Builder.() -> Unit) {
+    child(editText(f))
 }
 
 fun ComponentLayout.ContainerBuilder.childText(f: Text.Builder.(LayoutFuncCallback) -> Unit) {
