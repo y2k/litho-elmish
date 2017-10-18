@@ -35,6 +35,7 @@ class ElmishApplicationSpec {
         fun createInitialState(c: ComponentContext, model: StateValue<ElmProvider>, @Prop provider: ElmProvider) {
             model.set(provider)
             Elmish.handle(
+                c,
                 { provider.functions.init() },
                 { newModel, msg -> provider.functions.update(newModel, msg) },
                 { ElmishApplication.reload(c, it) })
@@ -60,7 +61,7 @@ class ElmishApplicationSpec {
                 val (model2, cmd2) = model.functions.update(model.subModel, msg)
                 ElmishApplication.reload(c, model2)
 
-                val msg2 = cmd2.handle() ?: return@launch
+                val msg2 = cmd2.handle(c) ?: return@launch
                 val (model3, _) = model.functions.update(model.subModel, msg2)
                 ElmishApplication.reload(c, model3)
             }
@@ -75,7 +76,7 @@ class ElmishApplicationSpec {
                 val (model2, cmd2) = model.functions.update(model.subModel, msg)
                 ElmishApplication.reload(c, model2)
 
-                val msg2 = cmd2.handle() ?: return@launch
+                val msg2 = cmd2.handle(c) ?: return@launch
                 val (model3, _) = model.functions.update(model.subModel, msg2)
                 ElmishApplication.reload(c, model3)
             }
