@@ -11,6 +11,9 @@ typealias Contextual<T> = (ComponentContext) -> T
 typealias LazyComponent = Contextual<ComponentLayout.Builder>
 typealias P<TModel, TMsg> = Pair<TModel, Cmd<TMsg>>
 
+fun ComponentLayout.ContainerBuilder.children(vararg xs: Contextual<ComponentLayout.Builder>) =
+    xs.forEach(this::child)
+
 inline fun FrescoImage.Builder.fresco(f: PipelineDraweeControllerBuilder.() -> Unit) {
     controller(
         Fresco

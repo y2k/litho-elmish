@@ -29,6 +29,19 @@ interface Cmd<out T> {
                         fError()
                     }
             }
+
+        fun <T, R> fromContext(f: ComponentContext.() -> R, fOk: (R) -> T): Cmd<T> =
+            object : Cmd<T> {
+                suspend override fun handle(ctx: ComponentContext): T? = fOk(ctx.f())
+            }
+
+        fun <T> fromContext(f: ComponentContext.() -> Unit): Cmd<T> =
+            object : Cmd<T> {
+                suspend override fun handle(ctx: ComponentContext): T? {
+                    ctx.f()
+                    return null
+                }
+            }
     }
 }
 
