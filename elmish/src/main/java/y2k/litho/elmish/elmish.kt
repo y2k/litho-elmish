@@ -9,6 +9,28 @@ interface Cmd<out T> {
     suspend fun handle(ctx: ComponentContext): T?
 
     companion object {
+        fun <T> fromSuspend(f: suspend () -> Unit): Cmd<T> =
+            object : Cmd<T> {
+                suspend override fun handle(ctx: ComponentContext): T? {
+                    f()
+                    return null
+                }
+            }
+
+        /**
+         * batch : List (Cmd msg) -> Cmd msg
+         */
+        fun <T> batch(vararg commands: Cmd<T>): Cmd<T> =
+            object : Cmd<T> {
+                suspend override fun handle(ctx: ComponentContext): T? {
+                    var last: T? = null
+                    for (cmd in commands) {
+                        last = cmd.handle(ctx)
+                    }
+                    return last
+                }
+            }
+
         fun <T> none(): Cmd<T> =
             object : Cmd<T> {
                 suspend override fun handle(ctx: ComponentContext): T? = null
