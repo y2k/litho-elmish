@@ -37,3 +37,7 @@ object Screen : ElmFunctions<Int, Msg> {
         }
 }
 ```
+
+# Example applications
+
+- https://github.com/y2k/SmsToTelegram
