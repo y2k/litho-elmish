@@ -33,6 +33,10 @@ fun Text.Builder.onClick(layout: LayoutFuncCallback, msg: Any) {
     }
 }
 
+fun ContainerBuilder.onClick(msg: Any) {
+    clickHandler(ElmishApplication.onEventHandle(innerContext, msg))
+}
+
 fun editText(f: EditText.Builder.() -> Unit): Contextual<ComponentLayout.Builder> =
     { context -> EditText.create(context).also(f).withLayout() }
 
