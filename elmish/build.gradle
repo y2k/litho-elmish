@@ -19,7 +19,7 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
     // Litho
-    def lithoVersion = '0.6.1'
+    def lithoVersion = '0.9.0'
     compile "com.facebook.litho:litho-core:$lithoVersion"
     compile "com.facebook.litho:litho-widget:$lithoVersion"
     provided "com.facebook.litho:litho-annotations:$lithoVersion"
@@ -30,14 +30,15 @@ dependencies {
     // Optional
     // For integration with Fresco
     compile "com.facebook.litho:litho-fresco:$lithoVersion"
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
 
+    // Kotlin Coroutines
     def coroutinesVersion = '0.19.1'
     provided "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
     provided "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
 }
 repositories {
     mavenCentral()
+    maven { url 'https://maven.google.com' }
 }
 kotlin {
     experimental {

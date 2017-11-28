@@ -22,13 +22,12 @@ object ListExampleScreen : ElmFunctions<Model, Msg> {
     }
 
     override fun init(): Pair<Model, Cmd<Msg>> {
-        val binder = ContextualRecyclerBinder(
-            this::viewItem, { _, _ -> false })
-        return Model(0, binder) to Cmd.fromSuspend({ loadData() }, ::ItemsMsg)
+        val binder = ContextualRecyclerBinder(::viewItem, Service.notComparableStub)
+        return Model(0, binder) to Cmd.fromSuspend({ Service.loadData() }, ::ItemsMsg)
     }
 
     override fun update(model: Model, msg: Msg): Pair<Model, Cmd<Msg>> = when (msg) {
-        UpdateMsg -> model to Cmd.fromSuspend({ getNow() }, ::NowUpdatedMsg)
+        UpdateMsg -> model to Cmd.fromSuspend({ Service.getNow() }, ::NowUpdatedMsg)
         is NowUpdatedMsg -> model.copy(rnd = msg.rnd) to Cmd.none()
         is ItemsMsg -> model.copy(binder = model.binder.copy(msg.xs)) to Cmd.none()
     }
@@ -61,14 +60,19 @@ object ListExampleScreen : ElmFunctions<Model, Msg> {
         }
 }
 
-private suspend fun getNow(): Long {
-    delay(300)
-    return Random().nextInt().toLong()
-}
+private object Service {
 
-private suspend fun loadData(): List<Unit> {
-    delay(300)
-    return List(30) { Unit }
+    val notComparableStub: (Any, Any) -> Boolean = { _, _ -> false }
+
+    suspend fun getNow(): Long {
+        delay(300)
+        return Random().nextInt().toLong()
+    }
+
+    suspend fun loadData(): List<Unit> {
+        delay(300)
+        return List(30) { Unit }
+    }
 }
 
 class ListExampleActivity : Activity() {

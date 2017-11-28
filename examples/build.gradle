@@ -26,33 +26,24 @@ android {
 
 dependencies {
     compile project(":elmish")
-    testCompile 'junit:junit:4.12'
 
-    compile 'com.android.support:appcompat-v7:25.3.1'
-
-    // Litho
-    def lithoVersion = '0.6.1'
-    compile "com.facebook.litho:litho-core:$lithoVersion"
-    compile "com.facebook.litho:litho-widget:$lithoVersion"
-    provided "com.facebook.litho:litho-annotations:$lithoVersion"
-    kapt "com.facebook.litho:litho-annotations:$lithoVersion"
-    kapt "com.facebook.litho:litho-processor:$lithoVersion"
-    // SoLoader
-    compile 'com.facebook.soloader:soloader:0.2.0'
-    // Optional
-    // For integration with Fresco
-    compile "com.facebook.litho:litho-fresco:$lithoVersion"
-    // For animated GIF support
-    compile 'com.facebook.fresco:animated-gif:1.5.0'
-
+    // Kotlin
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
-
     def coroutinesVersion = '0.19.1'
     compile "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
     compile "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
+
+    // Android
+    compile 'com.android.support:appcompat-v7:26.1.0'
+
+    // For animated GIF support
+    compile 'com.facebook.fresco:animated-gif:1.5.0'
+
+    testCompile 'junit:junit:4.12'
 }
 repositories {
     mavenCentral()
+    maven { url 'https://maven.google.com' }
 }
 kotlin {
     experimental {
