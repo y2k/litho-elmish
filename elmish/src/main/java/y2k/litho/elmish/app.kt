@@ -27,59 +27,56 @@ interface ElmFunctions<TModel, TMsg> {
 }
 
 @LayoutSpec
-class ElmishApplicationSpec {
-    companion object {
+object ElmishApplicationSpec {
+    @OnCreateInitialState
+    @JvmStatic
+    fun createInitialState(c: ComponentContext, model: StateValue<ElmProvider>, @Prop provider: ElmProvider) {
+        model.set(provider)
+        Elmish.handle(
+            c,
+            { provider.functions.init() },
+            { newModel, msg -> provider.functions.update(newModel, msg) },
+            { ElmishApplication.reload(c, it) })
+    }
 
-        @OnCreateInitialState
-        @JvmStatic
-        fun createInitialState(c: ComponentContext, model: StateValue<ElmProvider>, @Prop provider: ElmProvider) {
-            model.set(provider)
-            Elmish.handle(
-                c,
-                { provider.functions.init() },
-                { newModel, msg -> provider.functions.update(newModel, msg) },
-                { ElmishApplication.reload(c, it) })
+    @OnCreateLayout
+    @JvmStatic
+    fun onCreateLayout(c: ComponentContext, @State model: ElmProvider): ComponentLayout? {
+        return model.functions.view(model.subModel).invoke(c).build()
+    }
+
+    @OnUpdateState
+    @JvmStatic
+    fun reload(model: StateValue<ElmProvider>, @Param subModel: Any) {
+        val oldModel = model.get()
+        oldModel.subModel = subModel
+    }
+
+    @OnEvent(ClickEvent::class)
+    @JvmStatic
+    fun onEventHandle(c: ComponentContext, @Param msg: Any, @State model: ElmProvider) {
+        launch(UI) {
+            val (model2, cmd2) = model.functions.update(model.subModel, msg)
+            ElmishApplication.reload(c, model2)
+
+            val msg2 = cmd2.handle(c) ?: return@launch
+            val (model3, _) = model.functions.update(model.subModel, msg2)
+            ElmishApplication.reload(c, model3)
         }
+    }
 
-        @OnCreateLayout
-        @JvmStatic
-        fun onCreateLayout(c: ComponentContext, @State model: ElmProvider): ComponentLayout? {
-            return model.functions.view(model.subModel).invoke(c).build()
-        }
+    @OnEvent(TextChangedEvent::class)
+    @JvmStatic
+    fun onTextChanged(c: ComponentContext, @FromEvent text: String, @Param msgFactory: (String) -> Any, @State model: ElmProvider) {
+        launch(UI) {
+            val msg = msgFactory(text)
 
-        @OnUpdateState
-        @JvmStatic
-        fun reload(model: StateValue<ElmProvider>, @Param subModel: Any) {
-            val oldModel = model.get()
-            oldModel.subModel = subModel
-        }
+            val (model2, cmd2) = model.functions.update(model.subModel, msg)
+            ElmishApplication.reload(c, model2)
 
-        @OnEvent(ClickEvent::class)
-        @JvmStatic
-        fun onEventHandle(c: ComponentContext, @Param msg: Any, @State model: ElmProvider) {
-            launch(UI) {
-                val (model2, cmd2) = model.functions.update(model.subModel, msg)
-                ElmishApplication.reload(c, model2)
-
-                val msg2 = cmd2.handle(c) ?: return@launch
-                val (model3, _) = model.functions.update(model.subModel, msg2)
-                ElmishApplication.reload(c, model3)
-            }
-        }
-
-        @OnEvent(TextChangedEvent::class)
-        @JvmStatic
-        fun onTextChanged(c: ComponentContext, @FromEvent text: String, @Param msgFactory: (String) -> Any, @State model: ElmProvider) {
-            launch(UI) {
-                val msg = msgFactory(text)
-
-                val (model2, cmd2) = model.functions.update(model.subModel, msg)
-                ElmishApplication.reload(c, model2)
-
-                val msg2 = cmd2.handle(c) ?: return@launch
-                val (model3, _) = model.functions.update(model.subModel, msg2)
-                ElmishApplication.reload(c, model3)
-            }
+            val msg2 = cmd2.handle(c) ?: return@launch
+            val (model3, _) = model.functions.update(model.subModel, msg2)
+            ElmishApplication.reload(c, model3)
         }
     }
 }

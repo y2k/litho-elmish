@@ -24,20 +24,18 @@ class ElmishItemProvider(
     val func: (ComponentContext) -> ComponentLayout)
 
 @LayoutSpec
-class ElmishItemComponentSpec {
-    companion object {
+object ElmishItemComponentSpec {
 
-        @JvmStatic
-        @OnCreateLayout
-        fun onCreateLayout(c: ComponentContext, @Prop item: ElmishItemProvider): ComponentLayout =
-            item.func(c)
+    @JvmStatic
+    @OnCreateLayout
+    fun onCreateLayout(c: ComponentContext, @Prop item: ElmishItemProvider): ComponentLayout =
+        item.func(c)
 
-        @OnEvent(ClickEvent::class)
-        @JvmStatic
-        fun onItemClicked(c: ComponentContext, @Prop item: ElmishItemProvider) {
+    @OnEvent(ClickEvent::class)
+    @JvmStatic
+    fun onItemClicked(c: ComponentContext, @Prop item: ElmishItemProvider) {
 //            c.startActivity<EntitiesActivity>(item)
-            TODO()
-        }
+        TODO()
     }
 }
 
