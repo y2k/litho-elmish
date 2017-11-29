@@ -29,12 +29,12 @@ fun EditText.Builder.onTextChanged(msgFactory: (String) -> Any) {
 fun Text.Builder.onClick(layout: LayoutFuncCallback, msg: Any) {
     val ctx = innerContext
     layout {
-        clickHandler(ElmishApplication.onEventHandle(ctx, msg))
+        EventHandler.sendClick(msg, this, ctx)
     }
 }
 
 fun ContainerBuilder.onClick(msg: Any) {
-    clickHandler(ElmishApplication.onEventHandle(innerContext, msg))
+    EventHandler.sendClick(msg, this, innerContext)
 }
 
 fun editText(f: EditText.Builder.() -> Unit): Contextual<ComponentLayout.Builder> =

@@ -4,10 +4,7 @@ import com.facebook.litho.ClickEvent
 import com.facebook.litho.Component
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.ComponentLayout
-import com.facebook.litho.annotations.LayoutSpec
-import com.facebook.litho.annotations.OnCreateLayout
-import com.facebook.litho.annotations.OnEvent
-import com.facebook.litho.annotations.Prop
+import com.facebook.litho.annotations.*
 import com.facebook.litho.widget.Recycler
 import com.facebook.litho.widget.RecyclerBinder
 import com.facebook.litho.widget.innerContext
@@ -33,10 +30,8 @@ object ElmishItemComponentSpec {
 
     @OnEvent(ClickEvent::class)
     @JvmStatic
-    fun onItemClicked(c: ComponentContext, @Prop item: ElmishItemProvider) {
-//            c.startActivity<EntitiesActivity>(item)
-        TODO()
-    }
+    fun onItemClicked(c: ComponentContext, @Param msg: Any) =
+        c.TODO_NAME.onEventHandle(c, msg)
 }
 
 fun Recycler.Builder.binder(b: ContextualRecyclerBinder<*>) {
