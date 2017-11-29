@@ -1,4 +1,4 @@
-package y2k.litho.elmish
+package y2k.litho.elmish.experimental
 
 import com.facebook.litho.ComponentContext
 import kotlinx.coroutines.experimental.android.UI

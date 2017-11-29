@@ -2,8 +2,8 @@ package y2k.litho.elmish.examples
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import y2k.litho.elmish.*
 import y2k.litho.elmish.examples.EditExample.Msg
+import y2k.litho.elmish.experimental.*
 
 /**
  * Elm origin: http://elm-lang.org/examples/field

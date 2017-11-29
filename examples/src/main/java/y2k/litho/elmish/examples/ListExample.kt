@@ -2,12 +2,11 @@ package y2k.litho.elmish.examples
 
 import android.app.Activity
 import android.os.Bundle
-import com.facebook.litho.ComponentLayout
 import kotlinx.coroutines.experimental.delay
-import y2k.litho.elmish.*
 import y2k.litho.elmish.examples.ListExampleScreen.Model
 import y2k.litho.elmish.examples.ListExampleScreen.Msg
 import y2k.litho.elmish.examples.ListExampleScreen.Msg.*
+import y2k.litho.elmish.experimental.*
 import java.util.*
 
 object ListExampleScreen : ElmFunctions<Model, Msg> {
@@ -32,7 +31,7 @@ object ListExampleScreen : ElmFunctions<Model, Msg> {
         is ItemsMsg -> model.copy(binder = model.binder.copy(msg.xs)) to Cmd.none()
     }
 
-    override fun view(model: Model): Contextual<ComponentLayout.Builder> =
+    override fun view(model: Model) =
         column {
             children(
                 column {

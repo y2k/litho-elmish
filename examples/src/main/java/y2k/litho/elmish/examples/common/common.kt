@@ -7,7 +7,7 @@ import com.facebook.soloader.SoLoader
 import kotlinx.coroutines.experimental.asCoroutineDispatcher
 import kotlinx.coroutines.experimental.run
 import org.json.JSONObject
-import y2k.litho.elmish.Cmd
+import y2k.litho.elmish.experimental.Cmd
 import java.net.URL
 
 sealed class Result<out T, out E>

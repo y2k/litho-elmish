@@ -1,4 +1,4 @@
-package y2k.litho.elmish
+package y2k.litho.elmish.experimental
 
 import com.facebook.litho.ClickEvent
 import com.facebook.litho.Component

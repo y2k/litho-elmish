@@ -2,7 +2,6 @@ package y2k.litho.elmish.examples
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import y2k.litho.elmish.*
 import y2k.litho.elmish.examples.Domain.WAITING_GIF
 import y2k.litho.elmish.examples.Domain.getRandomGif
 import y2k.litho.elmish.examples.HttpExample.Model
@@ -10,6 +9,7 @@ import y2k.litho.elmish.examples.HttpExample.Msg
 import y2k.litho.elmish.examples.HttpExample.Msg.MorePlease
 import y2k.litho.elmish.examples.HttpExample.Msg.NewGif
 import y2k.litho.elmish.examples.common.*
+import y2k.litho.elmish.experimental.*
 
 /**
  * Elm origin: http://elm-lang.org/examples/http
