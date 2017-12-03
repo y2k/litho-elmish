@@ -2,21 +2,29 @@ package y2k.litho.elmish.experimental
 
 import android.content.Context
 import android.content.ContextWrapper
-import com.facebook.litho.ComponentContext
-import com.facebook.litho.ComponentLayout
+import com.facebook.litho.*
+import com.facebook.litho.EventHandler
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
 
 object EventHandler {
 
-    fun sendClick(msg: Any, builder: ComponentLayout.Builder, ctx: ComponentContext) {
-        val handler = when (ctx.componentScope) {
+    fun attachClickHandler(msg: Any, builder: ComponentLayout.Builder, ctx: ComponentContext) {
+        eventHandler(ctx, msg)
+            .let(builder::clickHandler)
+    }
+
+    fun attachClickHandler(msg: Any, builder: Component.Builder<*, *>, ctx: ComponentContext) {
+        eventHandler(ctx, msg)
+            .let(builder::clickHandler)
+    }
+
+    private fun eventHandler(ctx: ComponentContext, msg: Any): EventHandler<ClickEvent> =
+        when (ctx.componentScope) {
             is ElmishApplication -> ElmishApplication.onEventHandle(ctx, msg)
             is ElmishItemComponent -> ElmishItemComponent.onItemClicked(ctx, msg)
             else -> error("Unsupported component <${ctx.componentScope}> in layout")
         }
-        builder.clickHandler(handler)
-    }
 }
 
 class LifecycleHandler(

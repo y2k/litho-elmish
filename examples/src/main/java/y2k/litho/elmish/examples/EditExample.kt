@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import y2k.litho.elmish.examples.EditExample.Msg
 import y2k.litho.elmish.experimental.*
+import y2k.litho.elmish.experimental.Views.column
 
 /**
  * Elm origin: http://elm-lang.org/examples/field
@@ -20,12 +21,12 @@ object EditExample : ElmFunctions<String, Msg> {
 
     override fun view(model: String) =
         column {
-            childEditText {
+            editText {
                 hint("Text to reverse")
                 textSizeSp(30f)
                 onTextChanged(::Msg)
             }
-            childText {
+            text {
                 text(model)
                 textSizeSp(30f)
             }

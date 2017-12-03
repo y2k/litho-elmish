@@ -10,6 +10,7 @@ import y2k.litho.elmish.examples.HttpExample.Msg.MorePlease
 import y2k.litho.elmish.examples.HttpExample.Msg.NewGif
 import y2k.litho.elmish.examples.common.*
 import y2k.litho.elmish.experimental.*
+import y2k.litho.elmish.experimental.Views.column
 
 /**
  * Elm origin: http://elm-lang.org/examples/http
@@ -37,20 +38,20 @@ object HttpExample : ElmFunctions<Model, Msg> {
 
     override fun view(model: Model) =
         column {
-            childText {
+            text {
                 text(model.topic)
                 textSizeSp(40f)
             }
-            childFresco {
-                fresco {
+            fresco {
+                frescoController {
                     setUri(model.gifUrl)
                     autoPlayAnimations = true
                 }
             }
-            childText { layout ->
+            text {
                 text("More Please!")
                 textSizeSp(30f)
-                onClick(layout, MorePlease)
+                onClick(MorePlease)
             }
         }
 }

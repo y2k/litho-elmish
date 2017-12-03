@@ -7,6 +7,7 @@ import y2k.litho.elmish.examples.ListExampleScreen.Model
 import y2k.litho.elmish.examples.ListExampleScreen.Msg
 import y2k.litho.elmish.examples.ListExampleScreen.Msg.*
 import y2k.litho.elmish.experimental.*
+import y2k.litho.elmish.experimental.Views.column
 import java.util.*
 
 object ListExampleScreen : ElmFunctions<Model, Msg> {
@@ -33,29 +34,29 @@ object ListExampleScreen : ElmFunctions<Model, Msg> {
 
     override fun view(model: Model) =
         column {
-            children(
-                column {
-                    backgroundRes(android.R.drawable.btn_default)
-                    onClick(UpdateMsg)
-                    childText {
-                        text("UPDATED (${model.rnd})")
-                        textSizeSp(30f)
-                    }
-                },
-                recyclerView {
-                    binder(model.binder)
-                })
+            column {
+                backgroundRes(android.R.drawable.btn_default)
+                onClick(UpdateMsg)
+
+                text {
+                    text("UPDATED (${model.rnd})")
+                    textSizeSp(30f)
+                }
+            }
+            recyclerView {
+                binder(model.binder)
+            }
         }
 
     private fun viewItem(ignore: Unit) =
         column {
-            onClick(UpdateMsg)
             backgroundRes(android.R.drawable.btn_default)
-            child(
-                text {
-                    text("[BUTTON]")
-                    textSizeSp(30f)
-                })
+            onClick(UpdateMsg)
+
+            text {
+                text("[BUTTON]")
+                textSizeSp(30f)
+            }
         }
 }
 

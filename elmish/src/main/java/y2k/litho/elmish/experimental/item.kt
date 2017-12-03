@@ -35,16 +35,17 @@ object ElmishItemComponentSpec {
 }
 
 fun Recycler.Builder.binder(b: ContextualRecyclerBinder<*>) {
-    binder(b.getBinder(innerContext()))
+    binder(b.getBinder(innerContext))
 }
 
-fun recyclerView(f: Recycler.Builder.() -> Unit): Contextual<ComponentLayout.Builder> {
-    return { context ->
-        Recycler.create(context)
-            .apply(f)
-            .withLayout()
-    }
-}
+//@Deprecated("")
+//fun recyclerView(f: (@LithoElmishDslMarker Recycler.Builder).() -> Unit): Contextual<ComponentLayout.Builder> {
+//    return { context ->
+//        Recycler.create(context)
+//            .apply(f)
+//            .withLayout()
+//    }
+//}
 
 class ContextualRecyclerBinder<T>(
     compFactory: (T) -> Contextual<ComponentLayout.Builder>,

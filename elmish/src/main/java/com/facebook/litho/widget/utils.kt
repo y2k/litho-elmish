@@ -8,5 +8,5 @@ val Text.Builder.innerContext: ComponentContext
 val EditText.Builder.innerContext: ComponentContext
     get() = mContext
 
-fun Recycler.Builder.innerContext(): ComponentContext =
-    mContext
+val Recycler.Builder.innerContext: ComponentContext
+    get() = mContext

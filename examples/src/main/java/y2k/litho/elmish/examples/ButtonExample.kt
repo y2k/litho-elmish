@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity
 import y2k.litho.elmish.examples.ButtonExample.Msg.Decrease
 import y2k.litho.elmish.examples.ButtonExample.Msg.Increase
 import y2k.litho.elmish.experimental.*
+import y2k.litho.elmish.experimental.Views.column
 
 /**
  * Elm origin: http://elm-lang.org/examples/buttons
@@ -22,19 +23,19 @@ object ButtonExample : ElmFunctions<Int, ButtonExample.Msg> {
 
     override fun view(model: Int) =
         column {
-            childText { layout ->
+            text {
                 text("-")
                 textSizeSp(45f)
-                onClick(layout, Decrease)
+                onClick(Decrease)
             }
-            childText {
+            text {
                 text("$model")
                 textSizeSp(45f)
             }
-            childText { layout ->
+            text {
                 text("+")
                 textSizeSp(45f)
-                onClick(layout, Increase)
+                onClick(Increase)
             }
         }
 }

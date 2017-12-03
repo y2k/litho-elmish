@@ -11,28 +11,28 @@ object Screen : ElmFunctions<Int, Msg> {
 
     enum class Msg { Increase, Decrease }
 
-    override fun init(): Pair<Int, Msg> = 0 to Cmd.none()
+    override fun init(): Pair<Int, Cmd<Msg>> = 0 to Cmd.none()
 
-    override fun update(model: Int, msg: Msg): Pair<Int, Msg> = when (msg) {
+    override fun update(model: Int, msg: Msg): Pair<Int, Cmd<Msg>> = when (msg) {
         Increase -> (model + 1) to Cmd.none()
         Decrease -> (model - 1) to Cmd.none()
     }
 
     override fun view(model: Int) =
         column {
-            childText { layout ->
+            text {
                 text("-")
                 textSizeSp(45f)
-                onClick(layout, Decrease)
+                onClick(Decrease)
             }
-            childText {
+            text {
                 text("$model")
                 textSizeSp(45f)
             }
-            childText { layout ->
+            text {
                 text("+")
                 textSizeSp(45f)
-                onClick(layout, Increase)
+                onClick(Increase)
             }
         }
 }
