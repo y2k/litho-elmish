@@ -42,3 +42,4 @@ object Screen : ElmFunctions<Int, Msg> {
 
 - https://github.com/y2k/SmsToTelegram
 - https://github.com/y2k/LithoApp
+- https://github.com/y2k/OfflineTube
