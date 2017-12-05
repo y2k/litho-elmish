@@ -1,16 +1,18 @@
 package y2k.litho.elmish.examples
 
-import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
+import y2k.litho.elmish.examples.ButtonExample.Msg
 import y2k.litho.elmish.examples.ButtonExample.Msg.Decrease
 import y2k.litho.elmish.examples.ButtonExample.Msg.Increase
-import y2k.litho.elmish.experimental.*
+import y2k.litho.elmish.experimental.Cmd
+import y2k.litho.elmish.experimental.ElmFunctions
 import y2k.litho.elmish.experimental.Views.column
+import y2k.litho.elmish.experimental.onClick
+import y2k.litho.elmish.experimental.text
 
 /**
  * Elm origin: http://elm-lang.org/examples/buttons
  */
-object ButtonExample : ElmFunctions<Int, ButtonExample.Msg> {
+class ButtonExample : ElmFunctions<Int, Msg> {
 
     enum class Msg { Increase, Decrease }
 
@@ -38,12 +40,4 @@ object ButtonExample : ElmFunctions<Int, ButtonExample.Msg> {
                 onClick(Increase)
             }
         }
-}
-
-class ButtonExampleActivity : AppCompatActivity() {
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        program(ButtonExample)
-    }
 }

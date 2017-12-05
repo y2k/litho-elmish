@@ -29,10 +29,10 @@ object EventHandler {
 
 class LifecycleHandler(
     private val functions: ElmFunctions<Any, Any>,
-    private var subModel: Any) {
+    internal var subModel: Any) {
 
     private var initialized = false
-    private lateinit var appContext: ComponentContext
+    internal lateinit var appContext: ComponentContext
 
     fun onCreateLayout(c: ComponentContext): ComponentLayout? {
         if (!initialized) {
@@ -75,7 +75,7 @@ class LifecycleHandler(
         }
     }
 
-    private fun invalidateTree(newModel: Any) {
+    internal fun invalidateTree(newModel: Any) {
         subModel = newModel
         ElmishApplication.reload(appContext)
     }

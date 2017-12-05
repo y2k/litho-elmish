@@ -8,7 +8,7 @@ android {
 
     defaultConfig {
         applicationId "com.example.examples"
-        minSdkVersion 15
+        minSdkVersion 21
         targetSdkVersion 26
         versionCode 1
         versionName "1.0"
@@ -21,6 +21,13 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+
+    configurations.all {
+        resolutionStrategy.force 'com.google.code.findbugs:jsr305:3.0.1'
+    }
+    sourceSets {
+        androidTest.java.srcDirs += 'src/androidTest/java'
     }
 }
 
@@ -39,11 +46,21 @@ dependencies {
     // For animated GIF support
     compile 'com.facebook.fresco:animated-gif:1.5.0'
 
+    // WebSockets
+    compile 'com.squareup.okhttp3:okhttp-ws:3.4.1'
+
     testCompile 'junit:junit:4.12'
+    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+
+    // Kotlin Result
+    compile 'com.github.y2k:KotlinResult:031063116e'
 }
 repositories {
     mavenCentral()
     maven { url 'https://maven.google.com' }
+    maven { url 'https://jitpack.io' }
 }
 kotlin {
     experimental {

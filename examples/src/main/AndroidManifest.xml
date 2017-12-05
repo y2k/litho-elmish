@@ -12,29 +12,16 @@
             android:supportsRtl="true"
             android:name=".common.App"
             android:theme="@style/AppTheme">
-        <activity android:name=".ButtonExampleActivity">
+
+        <activity android:name=".ExampleListActivity" android:label="Elm examples">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".HttpExampleActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
+
+        <activity android:name=".ExampleActivity">
         </activity>
-        <activity android:name=".EditExampleActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
-        </activity>
-        <activity android:name=".ListExampleActivity" android:label="List example">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
-        </activity>
+
     </application>
 </manifest>

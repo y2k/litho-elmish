@@ -14,6 +14,8 @@ fun <TModel, TMsg> Activity.program(functions: ElmFunctions<TModel, TMsg>) {
         functions as ElmFunctions<Any, Any>,
         functions.init().first)
 
+    initializeSubscriptionPrototype(functions, handler)
+
     val context = ComponentContext(MyContext(this, handler))
     val component = ElmishApplication.create(context).build()
     setContentView(LithoView.create(context, component))
