@@ -2,8 +2,6 @@
 
 Port of Elm architecture to Kotlin with Litho
 
-## Link to binary artefact
-
 ![Release](https://jitpack.io/v/y2k/litho-elmish.svg)
 (https://jitpack.io/#y2k/litho-elmish)
 
