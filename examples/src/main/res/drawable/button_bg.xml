@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_pressed="true">
+        <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+            <item>
+                <shape android:shape="oval">
+                    <solid android:color="@color/colorPrimaryDark"/>
+                </shape>
+            </item>
+            <item android:drawable="@android:drawable/ic_menu_send"
+                  android:gravity="center"/>
+        </layer-list>
+    </item>
+    <item>
+        <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+            <item>
+                <shape android:shape="oval">
+                    <solid android:color="@color/colorPrimary"/>
+                </shape>
+            </item>
+            <item android:drawable="@android:drawable/ic_menu_send"
+                  android:gravity="center"/>
+        </layer-list>
+    </item>
+</selector>

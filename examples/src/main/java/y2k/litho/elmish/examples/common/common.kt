@@ -1,14 +1,46 @@
 package y2k.litho.elmish.examples.common
 
 import android.app.Application
+import android.graphics.Color
 import android.os.AsyncTask.THREAD_POOL_EXECUTOR
 import com.facebook.drawee.backends.pipeline.Fresco
+import com.facebook.litho.ComponentLayout
 import com.facebook.soloader.SoLoader
 import kotlinx.coroutines.experimental.asCoroutineDispatcher
 import kotlinx.coroutines.experimental.run
 import org.json.JSONObject
-import y2k.litho.elmish.experimental.Cmd
+import y2k.litho.elmish.experimental.*
 import java.net.URL
+
+typealias Contexted<T> = Contextual<T>
+
+fun ComponentLayout.ContainerBuilder.editTextWithLabel(
+    hint: String, cmd: (String) -> Any, error: String?) {
+    column {
+        editText {
+            hint(hint)
+            textSizeSp(30f)
+            isSingleLine(true)
+
+            onTextChanged(cmd)
+        }
+        text {
+            textColor(Color.RED)
+            textSizeSp(20f)
+            text(error)
+        }
+    }
+}
+
+inline fun <T, R> T.zipOption(other: R): Pair<T, R>? =
+    if (this == null || other == null) null else this to other
+
+inline fun <T1, T2, T3, R> Pair<Pair<T1?, T2?>?, T3?>?.map3Option(f: (T1, T2, T3) -> R): R? {
+    val (a, b) = this?.first ?: return null
+    val c = second
+    if (a == null || b == null || c == null) return null
+    return f(a, b, c)
+}
 
 sealed class Result<out T, out E>
 class Ok<out T>(val value: T) : Result<T, Nothing>()
