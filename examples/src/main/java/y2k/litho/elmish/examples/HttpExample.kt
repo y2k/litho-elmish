@@ -1,7 +1,5 @@
 package y2k.litho.elmish.examples
 
-import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
 import y2k.litho.elmish.examples.Domain.WAITING_GIF
 import y2k.litho.elmish.examples.Domain.getRandomGif
 import y2k.litho.elmish.examples.HttpExample.Model
@@ -15,7 +13,7 @@ import y2k.litho.elmish.experimental.Views.column
 /**
  * Elm origin: http://elm-lang.org/examples/http
  */
-object HttpExample : ElmFunctions<Model, Msg> {
+class HttpExample : ElmFunctions<Model, Msg> {
 
     data class Model(val topic: String, val gifUrl: String)
     sealed class Msg {
@@ -67,12 +65,4 @@ private object Domain {
         Decode.at(listOf("data", "image_url"), Decode.string())
 
     const val WAITING_GIF = "https://camo.githubusercontent.com/6ed028acbf67707d622344e0ef1bc3b098425b50/687474703a2f2f662e636c2e6c792f6974656d732f32473146315a304d306b306832553356317033392f535650726f67726573734855442e676966"
-}
-
-class HttpExampleActivity : AppCompatActivity() {
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        program(HttpExample)
-    }
 }

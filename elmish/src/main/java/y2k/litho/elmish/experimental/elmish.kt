@@ -1,5 +1,6 @@
 package y2k.litho.elmish.experimental
 
+import android.content.Context
 import com.facebook.litho.ComponentContext
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
@@ -13,6 +14,14 @@ interface Cmd<out T> {
             object : Cmd<T> {
                 suspend override fun handle(ctx: ComponentContext): T? {
                     f()
+                    return null
+                }
+            }
+
+        fun <T> fromSuspend_(f: suspend (Context) -> Unit): Cmd<T> =
+            object : Cmd<T> {
+                suspend override fun handle(ctx: ComponentContext): T? {
+                    f(ctx)
                     return null
                 }
             }
@@ -39,6 +48,11 @@ interface Cmd<out T> {
         fun <R, T> fromSuspend(f: suspend () -> R, fOk: (R) -> T): Cmd<T> =
             object : Cmd<T> {
                 suspend override fun handle(ctx: ComponentContext): T = fOk(f())
+            }
+
+        fun <R, T> fromSuspend_(f: suspend (Context) -> R, fOk: (R) -> T): Cmd<T> =
+            object : Cmd<T> {
+                suspend override fun handle(ctx: ComponentContext): T = fOk(f(ctx))
             }
 
         fun <R, T> fromSuspend(f: suspend () -> R, fOk: (R) -> T, fError: () -> T): Cmd<T> =

@@ -1,18 +1,56 @@
 package y2k.litho.elmish.examples.common
 
+import android.app.Activity
 import android.app.Application
+import android.content.Context
+import android.content.Intent
 import android.graphics.Color
 import android.os.AsyncTask.THREAD_POOL_EXECUTOR
 import com.facebook.drawee.backends.pipeline.Fresco
 import com.facebook.litho.ComponentLayout
 import com.facebook.soloader.SoLoader
+import dalvik.system.DexFile
 import kotlinx.coroutines.experimental.asCoroutineDispatcher
 import kotlinx.coroutines.experimental.run
 import org.json.JSONObject
+import y2k.litho.elmish.examples.Functions
 import y2k.litho.elmish.experimental.*
+import java.io.Serializable
 import java.net.URL
+import kotlin.reflect.KClass
 
 typealias Contexted<T> = Contextual<T>
+
+object Navigation {
+
+    suspend fun <T : Activity> openActivity(x: KClass<T>, arg: Serializable, ctx: Context) =
+        Intent(ctx, x.java)
+            .putExtra("arg", arg)
+            .let(ctx::startActivity)
+
+    fun getArgument(intent: Intent): Functions.Example? =
+        intent.getSerializableExtra("arg") as? Functions.Example
+}
+
+object ClassAnalyzer {
+
+    suspend fun getClassesInPackage(context: Context, pkg: Package): Sequence<Class<*>> {
+        val regex = pkg.name
+            .let(Regex.Companion::escape)
+            .let { Regex("$it\\.\\w+") }
+
+        val dexFile = DexFile(context.packageCodePath)
+        try {
+            return dexFile
+                .entries()
+                .asSequence()
+                .filter(regex::matches)
+                .map(javaClass.classLoader::loadClass)
+        } finally {
+            dexFile.close()
+        }
+    }
+}
 
 fun ComponentLayout.ContainerBuilder.editTextWithLabel(
     hint: String, cmd: (String) -> Any, error: String?) {

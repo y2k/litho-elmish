@@ -1,9 +1,8 @@
 package y2k.litho.elmish.examples
 
-import android.app.Activity
 import android.graphics.Color
-import android.os.Bundle
 import com.facebook.litho.ComponentLayout
+import com.facebook.yoga.YogaEdge.ALL
 import kotlinx.coroutines.experimental.delay
 import y2k.litho.elmish.examples.FormFunctions.FeedbackErrors
 import y2k.litho.elmish.examples.FormFunctions.FeedbackErrors.FailureNetwork
@@ -18,7 +17,7 @@ import y2k.litho.elmish.experimental.*
 import y2k.litho.elmish.experimental.Views.column
 import java.util.*
 
-object FormScreen : ElmFunctions<Model, Msg> {
+class FormScreen : ElmFunctions<Model, Msg> {
 
     sealed class Msg {
         class MessageChanged(val x: String) : Msg()
@@ -58,6 +57,8 @@ object FormScreen : ElmFunctions<Model, Msg> {
 
     override fun view(model: Model): Contexted<ComponentLayout.Builder> =
         column {
+            paddingDip(ALL, 4f)
+
             editTextWithLabel(
                 "Message",
                 ::MessageChanged,
@@ -70,6 +71,7 @@ object FormScreen : ElmFunctions<Model, Msg> {
                 "Email",
                 ::EmailChanged,
                 "Field required".takeIf { model.email == null })
+
             if (model.inProgress)
                 progress {
                     widthDip(60f)
@@ -82,6 +84,7 @@ object FormScreen : ElmFunctions<Model, Msg> {
                     heightDip(60f)
                     onClick(Send)
                 }
+
             when (model.finishStatus) {
                 is Ok ->
                     text {
@@ -132,13 +135,5 @@ object FormFunctions {
             1 -> Error(FailureServer("..."))
             else -> Ok(Unit)
         }
-    }
-}
-
-class FormActivity : Activity() {
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        program(FormScreen)
     }
 }

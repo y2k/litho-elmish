@@ -1,7 +1,5 @@
 package y2k.litho.elmish.examples
 
-import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
 import y2k.litho.elmish.examples.EditExample.Msg
 import y2k.litho.elmish.experimental.*
 import y2k.litho.elmish.experimental.Views.column
@@ -9,7 +7,7 @@ import y2k.litho.elmish.experimental.Views.column
 /**
  * Elm origin: http://elm-lang.org/examples/field
  */
-object EditExample : ElmFunctions<String, Msg> {
+class EditExample : ElmFunctions<String, Msg> {
 
     class Msg(val value: String)
 
@@ -31,12 +29,4 @@ object EditExample : ElmFunctions<String, Msg> {
                 textSizeSp(30f)
             }
         }
-}
-
-class EditExampleActivity : AppCompatActivity() {
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        program(EditExample)
-    }
 }

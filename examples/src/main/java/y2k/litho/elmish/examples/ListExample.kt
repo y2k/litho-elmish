@@ -1,16 +1,14 @@
 package y2k.litho.elmish.examples
 
-import android.app.Activity
-import android.os.Bundle
 import kotlinx.coroutines.experimental.delay
-import y2k.litho.elmish.examples.ListExampleScreen.Model
-import y2k.litho.elmish.examples.ListExampleScreen.Msg
-import y2k.litho.elmish.examples.ListExampleScreen.Msg.*
+import y2k.litho.elmish.examples.ListExample.Model
+import y2k.litho.elmish.examples.ListExample.Msg
+import y2k.litho.elmish.examples.ListExample.Msg.*
 import y2k.litho.elmish.experimental.*
 import y2k.litho.elmish.experimental.Views.column
 import java.util.*
 
-object ListExampleScreen : ElmFunctions<Model, Msg> {
+class ListExample : ElmFunctions<Model, Msg> {
     data class Model(
         val rnd: Long,
         val binder: ContextualRecyclerBinder<Unit>)
@@ -72,13 +70,5 @@ private object Service {
     suspend fun loadData(): List<Unit> {
         delay(300)
         return List(30) { Unit }
-    }
-}
-
-class ListExampleActivity : Activity() {
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        program(ListExampleScreen)
     }
 }
