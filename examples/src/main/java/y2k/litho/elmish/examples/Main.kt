@@ -7,12 +7,16 @@ import com.facebook.litho.ComponentLayout
 import com.facebook.yoga.YogaEdge.ALL
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.run
+import kotlinx.types.Result
+import kotlinx.types.Result.Error
+import kotlinx.types.Result.Ok
 import y2k.litho.elmish.examples.ExampleList.Model
 import y2k.litho.elmish.examples.ExampleList.Msg
 import y2k.litho.elmish.examples.ExampleList.Msg.ExampleLoaded
 import y2k.litho.elmish.examples.ExampleList.Msg.OpenExample
 import y2k.litho.elmish.examples.Functions.Example
 import y2k.litho.elmish.examples.common.ClassAnalyzer
+import y2k.litho.elmish.examples.common.Log.log
 import y2k.litho.elmish.examples.common.Navigation
 import y2k.litho.elmish.experimental.*
 import y2k.litho.elmish.experimental.Views.column
@@ -23,17 +27,19 @@ object ExampleList : ElmFunctions<Model, Msg> {
 
     class Model(val x: List<Example>)
     sealed class Msg {
-        class ExampleLoaded(val x: List<Example>) : Msg()
+        class ExampleLoaded(val x: Result<List<Example>, Exception>) : Msg()
         class OpenExample(val e: Example) : Msg()
     }
 
     override fun init(): Pair<Model, Cmd<Msg>> =
-        Model(emptyList()) to Cmd.fromSuspend_({ Functions.findExamples(it) }, ::ExampleLoaded)
+        Model(emptyList()) to Cmd.context({ Functions.findExamples(it) }, ::ExampleLoaded)
 
     override fun update(model: Model, msg: Msg): Pair<Model, Cmd<Msg>> =
         when (msg) {
-            is ExampleLoaded ->
-                Model(msg.x) to Cmd.none()
+            is ExampleLoaded -> when (msg.x) {
+                is Ok -> Model(msg.x.value) to Cmd.none()
+                is Error -> log(msg.x.error, model to Cmd.none())
+            }
             is OpenExample ->
                 model to Cmd.fromSuspend_({ Navigation.openActivity(ExampleActivity::class, msg.e, it) })
         }
@@ -73,6 +79,7 @@ object Functions {
 
     private fun checkItElmFunctions(cls: Class<*>): Boolean =
         ElmFunctions::class.java.isAssignableFrom(cls) &&
+            cls.constructors.any { it.parameterTypes.isEmpty() } &&
             Modifier.isPublic(cls.getDeclaredConstructor().modifiers)
 }
 

@@ -4,6 +4,9 @@ import android.graphics.Color
 import com.facebook.litho.ComponentLayout
 import com.facebook.yoga.YogaEdge.ALL
 import kotlinx.coroutines.experimental.delay
+import kotlinx.types.Result
+import kotlinx.types.Result.Error
+import kotlinx.types.Result.Ok
 import y2k.litho.elmish.examples.FormFunctions.FeedbackErrors
 import y2k.litho.elmish.examples.FormFunctions.FeedbackErrors.FailureNetwork
 import y2k.litho.elmish.examples.FormFunctions.FeedbackErrors.FailureServer
@@ -12,7 +15,9 @@ import y2k.litho.elmish.examples.FormFunctions.validateForEmpty
 import y2k.litho.elmish.examples.FormScreen.Model
 import y2k.litho.elmish.examples.FormScreen.Msg
 import y2k.litho.elmish.examples.FormScreen.Msg.*
-import y2k.litho.elmish.examples.common.*
+import y2k.litho.elmish.examples.common.editTextWithLabel
+import y2k.litho.elmish.examples.common.map3Option
+import y2k.litho.elmish.examples.common.zipOption
 import y2k.litho.elmish.experimental.*
 import y2k.litho.elmish.experimental.Views.column
 import java.util.*
@@ -55,7 +60,7 @@ class FormScreen : ElmFunctions<Model, Msg> {
             model.copy(finishStatus = msg.result, inProgress = false) to Cmd.none()
     }
 
-    override fun view(model: Model): Contexted<ComponentLayout.Builder> =
+    override fun view(model: Model): Contextual<ComponentLayout.Builder> =
         column {
             paddingDip(ALL, 4f)
 

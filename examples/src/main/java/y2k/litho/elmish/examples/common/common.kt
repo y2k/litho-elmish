@@ -12,14 +12,24 @@ import com.facebook.soloader.SoLoader
 import dalvik.system.DexFile
 import kotlinx.coroutines.experimental.asCoroutineDispatcher
 import kotlinx.coroutines.experimental.run
+import kotlinx.types.Result
+import kotlinx.types.Result.Error
+import kotlinx.types.Result.Ok
 import org.json.JSONObject
+import y2k.litho.elmish.examples.BuildConfig
 import y2k.litho.elmish.examples.Functions
 import y2k.litho.elmish.experimental.*
 import java.io.Serializable
 import java.net.URL
 import kotlin.reflect.KClass
 
-typealias Contexted<T> = Contextual<T>
+object Log {
+    @Suppress("NOTHING_TO_INLINE")
+    inline fun <T> log(e: Exception, x: T): T {
+        if (BuildConfig.DEBUG) e.printStackTrace()
+        return x
+    }
+}
 
 object Navigation {
 
@@ -70,6 +80,7 @@ fun ComponentLayout.ContainerBuilder.editTextWithLabel(
     }
 }
 
+@Suppress("NOTHING_TO_INLINE")
 inline fun <T, R> T.zipOption(other: R): Pair<T, R>? =
     if (this == null || other == null) null else this to other
 
@@ -79,10 +90,6 @@ inline fun <T1, T2, T3, R> Pair<Pair<T1?, T2?>?, T3?>?.map3Option(f: (T1, T2, T3
     if (a == null || b == null || c == null) return null
     return f(a, b, c)
 }
-
-sealed class Result<out T, out E>
-class Ok<out T>(val value: T) : Result<T, Nothing>()
-class Error<out E>(val error: E) : Result<Nothing, E>()
 
 typealias Decoder<T> = (String) -> T
 class Request<out T>(val url: String, val decoder: Decoder<T>)

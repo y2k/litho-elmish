@@ -4,6 +4,9 @@ import android.content.Context
 import com.facebook.litho.ComponentContext
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.launch
+import kotlinx.types.Result
+import kotlinx.types.Result.Error
+import kotlinx.types.Result.Ok
 
 interface Cmd<out T> {
 
@@ -53,6 +56,17 @@ interface Cmd<out T> {
         fun <R, T> fromSuspend_(f: suspend (Context) -> R, fOk: (R) -> T): Cmd<T> =
             object : Cmd<T> {
                 suspend override fun handle(ctx: ComponentContext): T = fOk(f(ctx))
+            }
+
+        fun <R, T> context(f: suspend (Context) -> R, callback: (Result<R, Exception>) -> T): Cmd<T> =
+            object : Cmd<T> {
+                suspend override fun handle(ctx: ComponentContext): T =
+                    try {
+                        callback(Ok(f(ctx)))
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        callback(Error(e))
+                    }
             }
 
         fun <R, T> fromSuspend(f: suspend () -> R, fOk: (R) -> T, fError: () -> T): Cmd<T> =

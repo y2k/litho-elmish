@@ -50,10 +50,14 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
+
+    // Kotlin Result
+    compile 'com.github.y2k:KotlinResult:031063116e'
 }
 repositories {
     mavenCentral()
     maven { url 'https://maven.google.com' }
+    maven { url 'https://jitpack.io' }
 }
 kotlin {
     experimental {

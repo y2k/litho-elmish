@@ -1,12 +1,16 @@
 package y2k.litho.elmish.examples
 
+import kotlinx.types.Result
+import kotlinx.types.Result.Error
+import kotlinx.types.Result.Ok
 import y2k.litho.elmish.examples.Domain.WAITING_GIF
 import y2k.litho.elmish.examples.Domain.getRandomGif
 import y2k.litho.elmish.examples.HttpExample.Model
 import y2k.litho.elmish.examples.HttpExample.Msg
 import y2k.litho.elmish.examples.HttpExample.Msg.MorePlease
 import y2k.litho.elmish.examples.HttpExample.Msg.NewGif
-import y2k.litho.elmish.examples.common.*
+import y2k.litho.elmish.examples.common.Decode
+import y2k.litho.elmish.examples.common.Http
 import y2k.litho.elmish.experimental.*
 import y2k.litho.elmish.experimental.Views.column
 
