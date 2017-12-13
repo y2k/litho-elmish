@@ -2,8 +2,6 @@ package y2k.litho.elmish.experimental
 
 import android.content.Context
 import com.facebook.litho.ComponentContext
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.launch
 import kotlinx.types.Result
 import kotlinx.types.Result.Error
 import kotlinx.types.Result.Ok
@@ -92,24 +90,5 @@ interface Cmd<out T> {
                     return null
                 }
             }
-    }
-}
-
-object Elmish {
-    fun <TMsg, TModel> handle(ctx: ComponentContext,
-                              init: () -> Pair<TModel, Cmd<TMsg>>,
-                              update: (TModel, TMsg) -> Pair<TModel, Cmd<TMsg>>,
-                              reload: (TModel) -> Unit) = launch(UI) {
-        val (model, cmd) = init()
-
-        reload(model)
-
-        val msg = cmd.handle(ctx) ?: return@launch
-        val (model2, cmd2) = update(model, msg)
-        reload(model2)
-
-        val msg2 = cmd2.handle(ctx) ?: return@launch
-        val (model3, _) = update(model2, msg2)
-        reload(model3)
     }
 }
