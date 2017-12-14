@@ -31,21 +31,12 @@ object ElmishItemComponentSpec {
     @OnEvent(ClickEvent::class)
     @JvmStatic
     fun onItemClicked(c: ComponentContext, @Param msg: Any) =
-        c.TODO_NAME.onEventHandle(c, msg)
+        c.sharedLifecycleHandler.onEventHandle(msg)
 }
 
 fun Recycler.Builder.binder(b: ContextualRecyclerBinder<*>) {
     binder(b.getBinder(innerContext))
 }
-
-//@Deprecated("")
-//fun recyclerView(f: (@LithoElmishDslMarker Recycler.Builder).() -> Unit): Contextual<ComponentLayout.Builder> {
-//    return { context ->
-//        Recycler.create(context)
-//            .apply(f)
-//            .withLayout()
-//    }
-//}
 
 class ContextualRecyclerBinder<T>(
     compFactory: (T) -> Contextual<ComponentLayout.Builder>,

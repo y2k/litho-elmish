@@ -4,7 +4,7 @@ import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.channels.ActorJob
 import kotlinx.coroutines.experimental.launch
 
-interface Sub<T> {
+interface Sub<out T> {
     fun start(target: ActorJob<T>): Job
 
     companion object {

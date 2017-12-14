@@ -21,6 +21,7 @@ import y2k.litho.elmish.examples.Functions
 import y2k.litho.elmish.experimental.*
 import java.io.Serializable
 import java.net.URL
+import kotlin.reflect.KClass
 
 object Log {
     @Suppress("NOTHING_TO_INLINE")
@@ -32,8 +33,13 @@ object Log {
 
 object Navigation {
 
+    <<<<<<< HEAD
     inline suspend fun <reified T : Activity> open(arg: Serializable, ctx: Context) =
         Intent(ctx, T::class.java)
+    =======
+    suspend fun <T : Activity> openActivity(x: KClass<T>, arg: Serializable, ctx: Context) =
+        Intent(ctx, x.java)
+    >>>>>>> master
             .putExtra("arg", arg)
             .let(ctx::startActivity)
 
