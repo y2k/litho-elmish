@@ -8,6 +8,7 @@ import com.facebook.litho.annotations.*
 import com.facebook.litho.widget.Recycler
 import com.facebook.litho.widget.RecyclerBinder
 import com.facebook.litho.widget.innerContext
+import y2k.litho.elmish.experimental.common.applyDiff
 
 private fun <T> createItemComponent(f: (T) -> Contextual<ComponentLayout.Builder>): (x: T) -> Contextual<Component<*>> =
     { x ->

@@ -36,7 +36,8 @@ dependencies {
 
     // Kotlin
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
-    def coroutinesVersion = '0.19.1'
+
+    // Kotlin Coroutines
     compile "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
     compile "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
 

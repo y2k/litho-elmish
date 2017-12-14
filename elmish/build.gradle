@@ -22,7 +22,6 @@ repositories {
     maven { url 'https://jitpack.io' }
 }
 dependencies {
-    testCompile 'junit:junit:4.12'
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
     // Litho
@@ -39,10 +38,11 @@ dependencies {
     compile "com.facebook.litho:litho-fresco:$lithoVersion"
 
     // Kotlin Coroutines
-    def coroutinesVersion = '0.19.1'
     compile "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
     compile "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
 
     // Kotlin Result
     provided 'com.github.y2k:KotlinResult:031063116e'
+
+    testCompile 'junit:junit:4.12'
 }

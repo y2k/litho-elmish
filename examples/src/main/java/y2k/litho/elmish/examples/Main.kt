@@ -24,10 +24,7 @@ import java.io.Serializable
 import java.lang.reflect.Modifier
 
 object ExampleList : ElmFunctions<Model, Msg> {
-    <<<<<<< HEAD
-    =======
 
-    >>>>>>> master
     class Model(val x: List<Example>)
     sealed class Msg {
         class ExampleLoaded(val x: Result<List<Example>, Exception>) : Msg()
@@ -44,24 +41,14 @@ object ExampleList : ElmFunctions<Model, Msg> {
                 is Error -> log(msg.x.error, model to Cmd.none())
             }
             is OpenExample ->
-                <
-                <
-                <
-                <
-                <
-                <
-                < HEAD
                 model to Cmd.fromSuspend_({ Navigation.open<ExampleActivity>(msg.e, it) })
-                    === === =
-                    model to Cmd.fromSuspend_({ Navigation.openActivity(ExampleActivity::class, msg.e, it) })
-                        > > > > > > > master
         }
 
     override fun view(model: Model): Contextual<ComponentLayout.Builder> =
         column {
             for (x in model.x) {
                 text {
-                    paddingDip(ALL, 4f)
+                    paddingDip(ALL, 8f)
                     marginDip(ALL, 2f)
                     backgroundRes(R.drawable.button_simple)
 

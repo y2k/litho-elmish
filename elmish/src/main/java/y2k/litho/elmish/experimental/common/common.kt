@@ -1,4 +1,4 @@
-package y2k.litho.elmish.experimental
+package y2k.litho.elmish.experimental.common
 
 import android.support.v7.util.DiffUtil
 import com.facebook.litho.Component

@@ -58,11 +58,15 @@ class LifecycleHandler<TModel, TMsg>(
         }
     }
 
-    private var currentSubs: Job? = null
+    private var currentSubs: Pair<Job, Sub<*>>? = null
 
     private fun reloadSubscriptions(newModel: TModel) {
-        currentSubs?.cancel()
-        currentSubs = functions.subscriptions(newModel).start(actorLoop)
+        val newSub = functions.subscriptions(newModel)
+        val cs = currentSubs
+        if (cs == null || !newSub.isSame(cs.second)) {
+            cs?.first?.cancel()
+            currentSubs = newSub.start(actorLoop) to newSub
+        }
     }
 
     private lateinit var c2: ComponentContext
