@@ -7,6 +7,7 @@ import com.facebook.litho.EventHandler
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.experimental.channels.SendChannel
 import kotlinx.coroutines.experimental.channels.actor
 
 object EventHandler {
@@ -30,31 +31,31 @@ object EventHandler {
 }
 
 class LifecycleHandler<TModel, TMsg>(
-    private val functions: ElmFunctions<TModel, TMsg>) {
-    private var subModel = functions.init().first
-    lateinit var appContext: ComponentContext
+    private val functions: ElmFunctions<TModel, TMsg>,
+    private val ctx: Context) {
+    private var model = functions.init().first
 
     private val actorLoop = actor<TMsg>(UI, capacity = 32) {
-        async {
-            val t = functions.init().second.handle(appContext)
-            if (t != null) channel.send(t)
-        }
+        executeCmdAsync(functions.init().second, channel)
 
         while (true) {
             val msg = receive()
 
-            val (model2, cmd2) = functions.update(subModel, msg)
-            subModel = model2
+            val (newModel, cmd) = functions.update(model, msg)
+            model = newModel
 
-            reloadSubscriptions(model2)
+            reloadSubscriptions(newModel)
 
-            ElmishApplication.reload(c2)
+            ElmishApplication.reload(reloadContext)
 
-            async {
-                val t = cmd2.handle(appContext)
-                if (t != null)
-                    channel.send(t)
-            }
+            executeCmdAsync(cmd, channel)
+        }
+    }
+
+    private fun executeCmdAsync(cmd: Cmd<TMsg>, channel: SendChannel<TMsg>) {
+        async {
+            val t = cmd.handle(ctx)
+            if (t != null) channel.send(t)
         }
     }
 
@@ -69,11 +70,11 @@ class LifecycleHandler<TModel, TMsg>(
         }
     }
 
-    private lateinit var c2: ComponentContext
+    private lateinit var reloadContext: ComponentContext
 
     fun onCreateLayout(c: ComponentContext): ComponentLayout? {
-        c2 = c
-        return functions.view(subModel).invoke(c).build()
+        reloadContext = c
+        return functions.view(model).invoke(c).build()
     }
 
     fun onEventHandle(msg: Any) {

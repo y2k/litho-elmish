@@ -56,6 +56,10 @@ fun ComponentLayout.ContainerBuilder.column(f: (@LithoElmishDslMarker ContainerB
     layoutChild(Views.column(f))
 }
 
+fun ComponentLayout.ContainerBuilder.row(f: (@LithoElmishDslMarker ContainerBuilder).() -> Unit) {
+    layoutChild(Views.row(f))
+}
+
 fun ComponentLayout.ContainerBuilder.recyclerView(f: (@LithoElmishDslMarker Recycler.Builder).() -> Unit) {
     child(Views.recyclerView(f))
 }
@@ -65,6 +69,9 @@ fun ComponentLayout.ContainerBuilder.fresco(f: (@LithoElmishDslMarker FrescoImag
 }
 
 object Views {
+
+    fun row(f: (@LithoElmishDslMarker ContainerBuilder).() -> Unit): Contextual<ContainerBuilder> =
+        { context -> Row.create(context).apply(f) }
 
     fun column(f: (@LithoElmishDslMarker ContainerBuilder).() -> Unit): Contextual<ContainerBuilder> =
         { context -> Column.create(context).apply(f) }

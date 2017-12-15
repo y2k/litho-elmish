@@ -1,6 +1,7 @@
 package y2k.litho.elmish.experimental
 
 import android.app.Activity
+import android.os.Bundle
 import com.facebook.litho.ClickEvent
 import com.facebook.litho.ComponentContext
 import com.facebook.litho.ComponentLayout
@@ -8,14 +9,26 @@ import com.facebook.litho.LithoView
 import com.facebook.litho.annotations.*
 import com.facebook.litho.widget.TextChangedEvent
 
+@Deprecated("")
 fun <TModel, TMsg> Activity.program(functions: ElmFunctions<TModel, TMsg>) {
-    val handler = LifecycleHandler(functions)
-
+    val handler = LifecycleHandler(functions, this)
     val context = ComponentContext(MyContext(this, handler))
-    handler.appContext = context
-
     val component = ElmishApplication.create(context).build()
     setContentView(LithoView.create(context, component))
+}
+
+inline fun <reified T : ElmFunctions<*, *>> Activity.program() =
+    program(T::class.java)
+
+fun <T : ElmFunctions<*, *>> Activity.program(clazz: Class<T>) {
+    if (fragmentManager.findFragmentByTag("main") == null) {
+        fragmentManager
+            .beginTransaction()
+            .add(android.R.id.content, LCFragment().apply {
+                arguments = Bundle().apply { putSerializable("f", clazz) }
+            }, "main")
+            .commit()
+    }
 }
 
 interface ElmFunctions<TModel, TMsg> {

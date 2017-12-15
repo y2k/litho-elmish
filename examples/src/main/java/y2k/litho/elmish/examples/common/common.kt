@@ -6,7 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import com.facebook.drawee.backends.pipeline.Fresco
-import com.facebook.litho.ComponentLayout
+import com.facebook.litho.ComponentLayout.ContainerBuilder
 import com.facebook.soloader.SoLoader
 import dalvik.system.DexFile
 import y2k.litho.elmish.examples.BuildConfig
@@ -16,6 +16,12 @@ import y2k.litho.elmish.experimental.editText
 import y2k.litho.elmish.experimental.onTextChanged
 import y2k.litho.elmish.experimental.text
 import java.io.Serializable
+
+inline fun <T> ContainerBuilder.viewStaticList(examples: List<T>, f: ContainerBuilder.(T) -> Unit) {
+    for (x in examples) {
+        f(x)
+    }
+}
 
 fun okhttp3.ws.WebSocket.closeQuietly() {
     try {
@@ -63,7 +69,7 @@ object ClassAnalyzer {
     }
 }
 
-fun ComponentLayout.ContainerBuilder.editTextWithLabel(
+fun ContainerBuilder.editTextWithLabel(
     hint: String, cmd: (String) -> Any, error: String?) {
     column {
         editText {

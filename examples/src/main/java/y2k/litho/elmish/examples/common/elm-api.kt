@@ -1,7 +1,7 @@
 package y2k.litho.elmish.examples.common
 
+import android.content.Context
 import android.os.AsyncTask
-import com.facebook.litho.ComponentContext
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.asCoroutineDispatcher
 import kotlinx.coroutines.experimental.channels.SendChannel
@@ -169,7 +169,7 @@ object WebSocket {
 
     fun <T> send(url: String, data: String): Cmd<T> =
         object : Cmd<T> {
-            suspend override fun handle(ctx: ComponentContext): T? {
+            suspend override fun handle(ctx: Context): T? {
                 actor.send(SendCmd(url, data))
                 return null
             }

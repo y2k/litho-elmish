@@ -3,7 +3,8 @@ package y2k.litho.elmish.examples
 import android.app.Activity
 import android.content.Context
 import android.os.Bundle
-import com.facebook.litho.ComponentLayout
+import android.os.StrictMode
+import com.facebook.litho.ComponentLayout.ContainerBuilder
 import com.facebook.yoga.YogaEdge.ALL
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.run
@@ -18,21 +19,22 @@ import y2k.litho.elmish.examples.Functions.Example
 import y2k.litho.elmish.examples.common.ClassAnalyzer
 import y2k.litho.elmish.examples.common.Log.log
 import y2k.litho.elmish.examples.common.Navigation
+import y2k.litho.elmish.examples.common.viewStaticList
 import y2k.litho.elmish.experimental.*
 import y2k.litho.elmish.experimental.Views.column
 import java.io.Serializable
 import java.lang.reflect.Modifier
 
-object ExampleList : ElmFunctions<Model, Msg> {
+class ExampleList : ElmFunctions<Model, Msg> {
 
-    class Model(val x: List<Example>)
+    class Model(val examples: List<Example>)
     sealed class Msg {
         class ExampleLoaded(val x: Result<List<Example>, Exception>) : Msg()
         class OpenExample(val e: Example) : Msg()
     }
 
     override fun init(): Pair<Model, Cmd<Msg>> =
-        Model(emptyList()) to Cmd.context({ Functions.findExamples(it) }, ::ExampleLoaded)
+        Model(emptyList()) to Cmd.fromContext({ Functions.findExamples(it) }, ::ExampleLoaded)
 
     override fun update(model: Model, msg: Msg): Pair<Model, Cmd<Msg>> =
         when (msg) {
@@ -41,23 +43,27 @@ object ExampleList : ElmFunctions<Model, Msg> {
                 is Error -> log(msg.x.error, model to Cmd.none())
             }
             is OpenExample ->
-                model to Cmd.fromSuspend_({ Navigation.open<ExampleActivity>(msg.e, it) })
+                model to Cmd.fromContext({ Navigation.open<ExampleActivity>(msg.e, it) })
         }
 
-    override fun view(model: Model): Contextual<ComponentLayout.Builder> =
+    override fun view(model: Model) =
         column {
-            for (x in model.x) {
-                text {
-                    paddingDip(ALL, 8f)
-                    marginDip(ALL, 2f)
-                    backgroundRes(R.drawable.button_simple)
-
-                    text(x.name)
-                    textSizeSp(24f)
-                    onClick(OpenExample(x))
-                }
+            viewStaticList(model.examples) {
+                viewItem(it)
             }
         }
+
+    private fun ContainerBuilder.viewItem(x: Example) {
+        text {
+            paddingDip(ALL, 8f)
+            marginDip(ALL, 2f)
+            backgroundRes(R.drawable.button_simple)
+
+            text(x.name)
+            textSizeSp(24f)
+            onClick(OpenExample(x))
+        }
+    }
 }
 
 object Functions {
@@ -87,7 +93,8 @@ class ExampleListActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        program(ExampleList)
+        StrictMode.enableDefaults()
+        program<ExampleList>()
     }
 }
 
@@ -95,8 +102,9 @@ class ExampleActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        StrictMode.enableDefaults()
         val example = Navigation.getArgument(intent)
-        if (example != null) program(example.cls.newInstance())
+        if (example != null) program(example.cls)
         else finish()
     }
 }
