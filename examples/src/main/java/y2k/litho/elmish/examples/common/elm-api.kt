@@ -1,30 +1,23 @@
 package y2k.litho.elmish.examples.common
 
-import android.content.Context
 import android.os.AsyncTask
-import kotlinx.coroutines.experimental.Job
-import kotlinx.coroutines.experimental.asCoroutineDispatcher
+import kotlinx.coroutines.experimental.*
 import kotlinx.coroutines.experimental.channels.SendChannel
 import kotlinx.coroutines.experimental.channels.actor
-import kotlinx.coroutines.experimental.delay
-import kotlinx.coroutines.experimental.launch
 import kotlinx.types.Result
-import okhttp3.OkHttpClient
-import okhttp3.Request.Builder
-import okhttp3.RequestBody
-import okhttp3.Response
-import okhttp3.ResponseBody
-import okhttp3.ws.WebSocketCall
-import okhttp3.ws.WebSocketListener
-import okio.Buffer
+import kotlinx.types.Result.Error
+import kotlinx.types.Result.Ok
 import org.json.JSONObject
-import y2k.litho.elmish.examples.common.WebSocket.ActorCmd.*
+import y2k.litho.elmish.examples.common.SocketLifetime.WebSocketCmd.*
+import y2k.litho.elmish.examples.common.WebSocket.Cmd.*
+import y2k.litho.elmish.examples.common.WebSocket.SocketWrapper.SocketCmd.*
+import y2k.litho.elmish.examples.common.WebSocket.SocketWrapper.SocketState.*
 import y2k.litho.elmish.experimental.Cmd
 import y2k.litho.elmish.experimental.Sub
-import java.io.IOException
 import java.lang.System.currentTimeMillis
 import java.net.URL
-import kotlin.coroutines.experimental.suspendCoroutine
+import java.util.*
+import kotlin.collections.ArrayList
 import okhttp3.Request as R
 import okhttp3.ws.WebSocket as NWebSocket
 
@@ -59,10 +52,10 @@ object Http {
                     try {
                         val json = URL(request.url).readText()
                         val t = request.decoder(json)
-                        Result.Ok(t)
+                        Ok(t)
                     } catch (e: Exception) {
                         e.printStackTrace()
-                        Result.Error("$e")
+                        Error("$e")
                     }
                 }
             }, msgFactory)
@@ -92,106 +85,122 @@ object Time {
     }
 }
 
-private typealias Callback = suspend (String) -> Unit
-
 object WebSocket {
 
-    private sealed class ActorCmd {
-        class SendCmd(val url: String, val body: String) : ActorCmd()
-        class AddListenerCmd(val url: String, val f: Callback) : ActorCmd()
-        class RemoveListenerCmd(val f: Callback) : ActorCmd()
-        class SocketUpdateCmd(val url: String, val body: String) : ActorCmd()
+    private class SocketWrapper(
+        val url: URL,
+        private val sendToParent: (String) -> Unit) {
+
+        private sealed class SocketCmd {
+            class SocketWrite(val data: String) : SocketCmd()
+            object FlushBuffer : SocketCmd()
+            class SocketSubCmd(val subCmd: SocketLifetime.WebSocketCmd) : SocketCmd()
+        }
+
+        private sealed class SocketState {
+            object NilSocket : SocketState()
+            object PendingSocket : SocketState()
+            class ReadySocket(val socket: NWebSocket) : SocketState()
+        }
+
+        private val aktor = actor<SocketCmd>(capacity = 128) {
+            var socket: SocketState = NilSocket
+            val buffer: Queue<String> = LinkedList<String>()
+
+            try {
+                while (true) {
+                    val cmd = receive()
+                    when (cmd) {
+                        is SocketWrite -> {
+                            buffer += cmd.data
+                            channel.send(FlushBuffer)
+                        }
+                        FlushBuffer -> {
+                            when (socket) {
+                                NilSocket -> {
+                                    socket = PendingSocket
+                                    SocketLifetime.start(url, ::SocketSubCmd, channel)
+                                }
+                                is ReadySocket -> {
+                                    while (true) {
+                                        val msg = buffer.peek() ?: break
+                                        if (socket.socket.sendMessage(msg) is Ok)
+                                            buffer.poll()
+                                        else {
+                                            channel.send(FlushBuffer)
+                                            break
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        is SocketSubCmd -> {
+                            val subCmd = cmd.subCmd
+                            when (subCmd) {
+                                is WebSocketRead -> sendToParent(subCmd.data)
+                                is WebSocketConnected -> {
+                                    socket = ReadySocket(subCmd.socket)
+                                    channel.send(FlushBuffer)
+                                }
+                                WebSocketDisconnected -> {
+                                    socket = PendingSocket
+                                    delay(5000)
+                                    SocketLifetime.start(url, ::SocketSubCmd, channel)
+                                }
+                            }
+                        }
+                    }
+                }
+            } finally {
+                (socket as? ReadySocket)?.socket?.closeQuietly()
+            }
+        }
+
+        suspend fun send(data: String) = aktor.send(SocketWrite(data))
+
+        fun close() {
+            aktor.close()
+        }
     }
 
-    private val actor = actor<ActorCmd>(capacity = 32) {
-        val sockets = HashMap<String, NWebSocket>()
-        val urlListeners = HashMap<String, HashSet<Callback>>()
+    private sealed class Cmd {
+        class SendData(val url: URL, val data: String) : Cmd()
+        class UserConnected(val url: URL, val offer: (String) -> Unit, val id: Any) : Cmd()
+        class UserDisconnected(val id: Any) : Cmd()
+    }
+
+    private val aktor = actor<Cmd>(capacity = 128) {
+        val wrappers = ArrayList<SocketWrapper>()
+        val users = ArrayList<UserConnected>()
 
         while (true) {
             val cmd = receive()
             when (cmd) {
-                is SendCmd -> {
-                    try {
-                        val socket = sockets.getOrPut(cmd.url) { createSocket(cmd.url) }
-                        socket.sendMessage(RequestBody.create(NWebSocket.TEXT, cmd.body))
-                    } catch (e: Exception) {
-                        sockets.remove(cmd.url)?.closeQuietly()
-                        channel.offer(cmd)
-                    }
+                is SendData ->
+                    wrappers.find { it.url == cmd.url }?.send(cmd.data)
+                is UserConnected -> {
+                    if (wrappers.none { it.url == cmd.url })
+                        wrappers.add(SocketWrapper(cmd.url, cmd.offer))
+                    users += cmd
                 }
-                is AddListenerCmd -> {
-                    urlListeners.getOrPut(cmd.url, { HashSet() }).add(cmd.f)
-                    sockets.getOrPut(cmd.url) { createSocket(cmd.url) }
-                }
-                is RemoveListenerCmd -> {
-                    urlListeners
-                        .toList()
-                        .forEach { (url, listeners) ->
-                            listeners.remove(cmd.f)
-                            if (listeners.isEmpty()) {
-                                urlListeners.remove(url)
-                                sockets.remove(url)?.closeQuietly()
-                            }
-                        }
-                }
-                is SocketUpdateCmd -> {
-                    urlListeners
-                        .getOrElse(cmd.url, { emptySet<Callback>() })
-                        .forEach { it(cmd.body) }
+                is UserDisconnected -> {
+                    users.removeAll { it.id == cmd.id }
+                    wrappers.removeAll({ w -> users.none { it.url == w.url } }, SocketWrapper::close)
                 }
             }
         }
     }
 
-    private suspend fun createSocket(url: String): NWebSocket =
-        suspendCoroutine { continuation ->
-            WebSocketCall
-                .create(
-                    OkHttpClient.Builder().build(),
-                    Builder().url(url).build())
-                .enqueue(object : WebSocketListener {
-                    override fun onOpen(webSocket: NWebSocket, response: Response?) {
-                        continuation.resume(webSocket)
-                    }
+    suspend fun send(url: URL, data: String) =
+        aktor.send(SendData(url, data))
 
-                    override fun onFailure(e: IOException, response: Response?) {
-                        e.printStackTrace()
-                    }
-
-                    override fun onMessage(message: ResponseBody) {
-                        actor.offer(SocketUpdateCmd(url, message.string()))
-                    }
-
-                    override fun onClose(code: Int, reason: String?) = Unit
-                    override fun onPong(payload: Buffer?) = Unit
-                })
-        }
-
-    fun <T> send(url: String, data: String): Cmd<T> =
-        object : Cmd<T> {
-            suspend override fun handle(ctx: Context): T? {
-                actor.send(SendCmd(url, data))
-                return null
-            }
-        }
-
-    fun <T> listen(url: String, f: (String) -> T): Sub<T> = WebSocketSub(f, url)
-
-    private class WebSocketSub<T>(
-        private val f: (String) -> T,
-        private val url: String) : Sub<T> {
-
-        override fun isSame(other: Sub<*>): Boolean =
-            other is WebSocketSub<*> && url == other.url
-
-        override fun start(target: SendChannel<T>): Job = launch {
-            val f: suspend (String) -> Unit = { target.send(f(it)) }
+    fun <T> listen(url: URL, convert: (String) -> T, callback: SendChannel<T>): Job =
+        launch {
             try {
-                actor.send(AddListenerCmd(url, f))
+                aktor.send(UserConnected(url, { callback.offer(convert(it)) }, callback))
                 delay(Long.MAX_VALUE)
-            } finally {
-                actor.send(RemoveListenerCmd(f))
+            } catch (e: CancellationException) {
+                aktor.offer(UserDisconnected(callback))
             }
         }
-    }
 }
