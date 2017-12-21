@@ -7,8 +7,9 @@ import y2k.litho.elmish.examples.WebSocketExample.Msg.*
 import y2k.litho.elmish.examples.common.WebSocket
 import y2k.litho.elmish.experimental.*
 import y2k.litho.elmish.experimental.Views.column
+import java.net.URL
 
-private val echoServer = "wss://echo.websocket.org"
+private val echoServer = URL("wss://echo.websocket.org")
 
 /**
  * http://elm-lang.org/examples/websockets

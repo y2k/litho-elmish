@@ -191,8 +191,19 @@ object WebSocket {
         }
     }
 
-    suspend fun send(url: URL, data: String) =
-        aktor.send(SendData(url, data))
+    fun <R> send(url: URL, data: String): y2k.litho.elmish.experimental.Cmd<R> =
+        y2k.litho.elmish.experimental.Cmd.fromSuspend { aktor.send(SendData(url, data)) }
+
+    fun <T> listen(url: URL, convert: (String) -> T): Sub<T> =
+        WebSocketSub(url, convert)
+
+    private class WebSocketSub<T>(val url: URL, val convert: (String) -> T) : Sub<T> {
+        override fun start(target: SendChannel<T>): Job =
+            listen(url, convert, target)
+
+        override fun isSame(other: Sub<*>): Boolean =
+            other is WebSocketSub && other.url == url
+    }
 
     fun <T> listen(url: URL, convert: (String) -> T, callback: SendChannel<T>): Job =
         launch {
