@@ -1,14 +1,15 @@
 package y2k.litho.elmish.examples
 
+import com.facebook.litho.ComponentLayout.ContainerBuilder
 import kotlinx.coroutines.experimental.delay
 import y2k.litho.elmish.examples.ListExample.Model
 import y2k.litho.elmish.examples.ListExample.Msg
 import y2k.litho.elmish.examples.ListExample.Msg.*
 import y2k.litho.elmish.experimental.*
-import y2k.litho.elmish.experimental.Views.column
 import java.util.*
 
 class ListExample : ElmFunctions<Model, Msg> {
+
     data class Model(
         val rnd: Long,
         val binder: ContextualRecyclerBinder<Unit>)
@@ -30,24 +31,23 @@ class ListExample : ElmFunctions<Model, Msg> {
         is ItemsMsg -> model.copy(binder = model.binder.copy(msg.xs)) to Cmd.none()
     }
 
-    override fun view(model: Model) =
+    override fun ContainerBuilder.view(model: Model) {
         column {
-            column {
-                backgroundRes(android.R.drawable.btn_default)
-                onClick(UpdateMsg)
+            backgroundRes(android.R.drawable.btn_default)
+            onClick(UpdateMsg)
 
-                text {
-                    text("UPDATED (${model.rnd})")
-                    textSizeSp(30f)
-                }
-            }
-            recyclerView {
-                binder(model.binder)
+            text {
+                text("UPDATED (${model.rnd})")
+                textSizeSp(30f)
             }
         }
+        recyclerView {
+            binder(model.binder)
+        }
+    }
 
     private fun viewItem(ignore: Unit) =
-        column {
+        Views.column {
             backgroundRes(android.R.drawable.btn_default)
             onClick(UpdateMsg)
 

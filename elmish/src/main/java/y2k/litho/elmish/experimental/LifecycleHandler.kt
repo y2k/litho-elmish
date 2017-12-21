@@ -74,7 +74,9 @@ class LifecycleHandler<TModel, TMsg>(
 
     fun onCreateLayout(c: ComponentContext): ComponentLayout? {
         reloadContext = c
-        return functions.view(model).invoke(c).build()
+        return with(functions) {
+            Views.column { this.view(model) }.invoke(c).build()
+        }
     }
 
     fun onEventHandle(msg: Any) {

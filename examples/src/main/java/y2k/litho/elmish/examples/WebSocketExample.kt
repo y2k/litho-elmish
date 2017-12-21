@@ -6,7 +6,6 @@ import y2k.litho.elmish.examples.WebSocketExample.Msg
 import y2k.litho.elmish.examples.WebSocketExample.Msg.*
 import y2k.litho.elmish.examples.common.WebSocket
 import y2k.litho.elmish.experimental.*
-import y2k.litho.elmish.experimental.Views.column
 import java.net.URL
 
 private val echoServer = URL("wss://echo.websocket.org")
@@ -15,6 +14,7 @@ private val echoServer = URL("wss://echo.websocket.org")
  * http://elm-lang.org/examples/websockets
  */
 class WebSocketExample : ElmFunctions<Model, Msg> {
+
     data class Model(
         val input: String = "",
         val messages: List<String> = emptyList())
@@ -41,26 +41,25 @@ class WebSocketExample : ElmFunctions<Model, Msg> {
                 model.copy(messages = listOf("" + msg.message) + model.messages) to Cmd.none()
         }
 
-    override fun view(model: Model) =
-        column {
-            editText {
-                textSizeSp(20f)
-                text(model.input)
-                isSingleLine(true)
-                onTextChanged(::Input)
-            }
-
-            column {
-                backgroundRes(R.drawable.button_bg)
-                widthDip(60f)
-                heightDip(60f)
-                onClick(Send)
-            }
-
-            model.messages
-                .reversed()
-                .map { viewMessage(it) }
+    override fun ContainerBuilder.view(model: Model) {
+        editText {
+            textSizeSp(20f)
+            text(model.input)
+            isSingleLine(true)
+            onTextChanged(::Input)
         }
+
+        column {
+            backgroundRes(R.drawable.button_bg)
+            widthDip(60f)
+            heightDip(60f)
+            onClick(Send)
+        }
+
+        model.messages
+            .reversed()
+            .map { viewMessage(it) }
+    }
 
     private fun ContainerBuilder.viewMessage(text: String) =
         text {

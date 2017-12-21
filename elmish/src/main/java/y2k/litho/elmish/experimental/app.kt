@@ -34,7 +34,7 @@ fun <T : ElmFunctions<*, *>> Activity.program(clazz: Class<T>) {
 interface ElmFunctions<TModel, TMsg> {
     fun init(): Pair<TModel, Cmd<TMsg>>
     fun update(model: TModel, msg: TMsg): Pair<TModel, Cmd<TMsg>>
-    fun view(model: TModel): Contextual<ComponentLayout.Builder>
+    fun ComponentLayout.ContainerBuilder.view(model: TModel)
     fun subscriptions(model: TModel): Sub<TMsg> = Sub.none()
 }
 

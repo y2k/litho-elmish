@@ -21,7 +21,6 @@ import y2k.litho.elmish.examples.common.Log.log
 import y2k.litho.elmish.examples.common.Navigation
 import y2k.litho.elmish.examples.common.viewStaticList
 import y2k.litho.elmish.experimental.*
-import y2k.litho.elmish.experimental.Views.column
 import java.io.Serializable
 import java.lang.reflect.Modifier
 
@@ -46,7 +45,7 @@ class ExampleList : ElmFunctions<Model, Msg> {
                 model to Cmd.fromContext({ Navigation.open<ExampleActivity>(msg.e, it) })
         }
 
-    override fun view(model: Model) =
+    override fun ContainerBuilder.view(model: Model) =
         column {
             viewStaticList(model.examples) {
                 viewItem(it)

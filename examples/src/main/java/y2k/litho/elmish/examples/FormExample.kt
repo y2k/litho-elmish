@@ -1,7 +1,7 @@
 package y2k.litho.elmish.examples
 
 import android.graphics.Color
-import com.facebook.litho.ComponentLayout
+import com.facebook.litho.ComponentLayout.ContainerBuilder
 import com.facebook.yoga.YogaEdge.ALL
 import kotlinx.coroutines.experimental.delay
 import kotlinx.types.Result
@@ -19,7 +19,6 @@ import y2k.litho.elmish.examples.common.editTextWithLabel
 import y2k.litho.elmish.examples.common.map3Option
 import y2k.litho.elmish.examples.common.zipOption
 import y2k.litho.elmish.experimental.*
-import y2k.litho.elmish.experimental.Views.column
 import java.util.*
 
 class FormScreen : ElmFunctions<Model, Msg> {
@@ -60,50 +59,49 @@ class FormScreen : ElmFunctions<Model, Msg> {
             model.copy(finishStatus = msg.result, inProgress = false) to Cmd.none()
     }
 
-    override fun view(model: Model): Contextual<ComponentLayout.Builder> =
-        column {
-            paddingDip(ALL, 4f)
+    override fun ContainerBuilder.view(model: Model) {
+        paddingDip(ALL, 4f)
 
-            editTextWithLabel(
-                "Message",
-                ::MessageChanged,
-                "Field required".takeIf { model.message == null })
-            editTextWithLabel(
-                "Full name",
-                ::FullNameChanged,
-                "Field required".takeIf { model.fullName == null })
-            editTextWithLabel(
-                "Email",
-                ::EmailChanged,
-                "Field required".takeIf { model.email == null })
+        editTextWithLabel(
+            "Message",
+            ::MessageChanged,
+            "Field required".takeIf { model.message == null })
+        editTextWithLabel(
+            "Full name",
+            ::FullNameChanged,
+            "Field required".takeIf { model.fullName == null })
+        editTextWithLabel(
+            "Email",
+            ::EmailChanged,
+            "Field required".takeIf { model.email == null })
 
-            if (model.inProgress)
-                progress {
-                    widthDip(60f)
-                    heightDip(60f)
-                }
-            else
-                column {
-                    backgroundRes(R.drawable.button_bg)
-                    widthDip(60f)
-                    heightDip(60f)
-                    onClick(Send)
-                }
-
-            when (model.finishStatus) {
-                is Ok ->
-                    text {
-                        text("Feedback was successfully sent")
-                        textSizeSp(20f)
-                    }
-                is Error ->
-                    text {
-                        text(model.finishStatus.error.toUserMessage())
-                        textSizeSp(20f)
-                        textColor(Color.RED)
-                    }
+        if (model.inProgress)
+            progress {
+                widthDip(60f)
+                heightDip(60f)
             }
+        else
+            column {
+                backgroundRes(R.drawable.button_bg)
+                widthDip(60f)
+                heightDip(60f)
+                onClick(Send)
+            }
+
+        when (model.finishStatus) {
+            is Ok ->
+                text {
+                    text("Feedback was successfully sent")
+                    textSizeSp(20f)
+                }
+            is Error ->
+                text {
+                    text(model.finishStatus.error.toUserMessage())
+                    textSizeSp(20f)
+                    textColor(Color.RED)
+                }
         }
+    }
 
     private fun FeedbackErrors.toUserMessage() = when (this) {
         is FailureNetwork -> "Network error"

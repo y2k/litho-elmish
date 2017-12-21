@@ -1,5 +1,6 @@
 package y2k.litho.elmish.examples
 
+import com.facebook.litho.ComponentLayout.ContainerBuilder
 import kotlinx.types.Result
 import kotlinx.types.Result.Error
 import kotlinx.types.Result.Ok
@@ -12,7 +13,6 @@ import y2k.litho.elmish.examples.HttpExample.Msg.NewGif
 import y2k.litho.elmish.examples.common.Decode
 import y2k.litho.elmish.examples.common.Http
 import y2k.litho.elmish.experimental.*
-import y2k.litho.elmish.experimental.Views.column
 
 /**
  * Elm origin: http://elm-lang.org/examples/http
@@ -20,6 +20,7 @@ import y2k.litho.elmish.experimental.Views.column
 class HttpExample : ElmFunctions<Model, Msg> {
 
     data class Model(val topic: String, val gifUrl: String)
+
     sealed class Msg {
         object MorePlease : Msg()
         class NewGif(val result: Result<String, String>) : Msg()
@@ -38,24 +39,23 @@ class HttpExample : ElmFunctions<Model, Msg> {
         }
     }
 
-    override fun view(model: Model) =
-        column {
-            text {
-                text(model.topic)
-                textSizeSp(40f)
-            }
-            fresco {
-                frescoController {
-                    setUri(model.gifUrl)
-                    autoPlayAnimations = true
-                }
-            }
-            text {
-                text("More Please!")
-                textSizeSp(30f)
-                onClick(MorePlease)
+    override fun ContainerBuilder.view(model: Model) {
+        text {
+            text(model.topic)
+            textSizeSp(40f)
+        }
+        fresco {
+            frescoController {
+                setUri(model.gifUrl)
+                autoPlayAnimations = true
             }
         }
+        text {
+            text("More Please!")
+            textSizeSp(30f)
+            onClick(MorePlease)
+        }
+    }
 }
 
 private object Domain {

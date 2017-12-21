@@ -1,11 +1,11 @@
 package y2k.litho.elmish.examples
 
+import com.facebook.litho.ComponentLayout.ContainerBuilder
 import y2k.litho.elmish.examples.ButtonExample.Msg
 import y2k.litho.elmish.examples.ButtonExample.Msg.Decrease
 import y2k.litho.elmish.examples.ButtonExample.Msg.Increase
 import y2k.litho.elmish.experimental.Cmd
 import y2k.litho.elmish.experimental.ElmFunctions
-import y2k.litho.elmish.experimental.Views.column
 import y2k.litho.elmish.experimental.onClick
 import y2k.litho.elmish.experimental.text
 
@@ -23,21 +23,20 @@ class ButtonExample : ElmFunctions<Int, Msg> {
         Decrease -> (model - 1) to Cmd.none()
     }
 
-    override fun view(model: Int) =
-        column {
-            text {
-                text("-")
-                textSizeSp(45f)
-                onClick(Decrease)
-            }
-            text {
-                text("$model")
-                textSizeSp(45f)
-            }
-            text {
-                text("+")
-                textSizeSp(45f)
-                onClick(Increase)
-            }
+    override fun ContainerBuilder.view(model: Int) {
+        text {
+            text("-")
+            textSizeSp(45f)
+            onClick(Decrease)
         }
+        text {
+            text("$model")
+            textSizeSp(45f)
+        }
+        text {
+            text("+")
+            textSizeSp(45f)
+            onClick(Increase)
+        }
+    }
 }
