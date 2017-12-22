@@ -14,7 +14,6 @@ import kotlinx.types.Result.Ok
 import y2k.litho.elmish.examples.Blackjack.Game
 import y2k.litho.elmish.examples.Blackjack.Hand
 import y2k.litho.elmish.examples.GameExample.Action.*
-import y2k.litho.elmish.examples.GameExample.Model
 import y2k.litho.elmish.examples.GameExample.Msg
 import y2k.litho.elmish.examples.GameExample.Msg.Clicked
 import y2k.litho.elmish.examples.GameExample.Msg.NewGame
@@ -24,9 +23,7 @@ import y2k.litho.elmish.examples.common.subList
 import y2k.litho.elmish.experimental.*
 import java.util.*
 
-class GameExample : ElmFunctions<Model, Msg> {
-
-    data class Model(val g: Game)
+class GameExample : ElmFunctions<Game, Msg> {
 
     sealed class Msg {
         class NewGame(val game: Result<Game, Exception>) : Msg()
@@ -35,36 +32,36 @@ class GameExample : ElmFunctions<Model, Msg> {
 
     enum class Action { Deal, Hit, Stay }
 
-    override fun init(): Pair<Model, Cmd<Msg>> =
-        Model(Blackjack.createStub()) to Cmd.fromContext({ Blackjack.deal() }, ::NewGame)
+    override fun init(): Pair<Game, Cmd<Msg>> =
+        Blackjack.createStub() to Cmd.fromContext({ Blackjack.deal() }, ::NewGame)
 
-    override fun update(model: Model, msg: Msg): Pair<Model, Cmd<Msg>> = when (msg) {
+    override fun update(model: Game, msg: Msg): Pair<Game, Cmd<Msg>> = when (msg) {
         is NewGame -> when (msg.game) {
-            is Ok -> model.copy(g = msg.game.value) to Cmd.none()
+            is Ok -> msg.game.value to Cmd.none()
             is Error -> Log.log(msg.game.error, model) to Cmd.none()
         }
         is Clicked -> when (msg.action) {
-            Deal -> model.copy(g = Blackjack.createStub()) to Cmd.fromContext({ Blackjack.deal() }, ::NewGame)
-            Hit -> model.copy(g = Blackjack.hit(model.g)) to Cmd.none()
-            Stay -> model.copy(g = Blackjack.stay(model.g)) to Cmd.none()
+            Deal -> Blackjack.createStub() to Cmd.fromContext({ Blackjack.deal() }, ::NewGame)
+            Hit -> Blackjack.hit(model) to Cmd.none()
+            Stay -> Blackjack.stay(model) to Cmd.none()
         }
     }
 
-    override fun ContainerBuilder.view(model: Model) {
+    override fun ContainerBuilder.view(model: Game) {
         backgroundColor(0xFFF0F0F0.toInt())
         text {
             textSizeSp(35f)
             text("Blackjack")
         }
 
-        if (!Blackjack.isStub(model.g)) {
-            buttonBar(model.g)
+        if (!Blackjack.isStub(model)) {
+            buttonBar(model)
 
             row {
                 marginDip(YogaEdge.TOP, 4f)
 
-                handUi(model.g.ph)
-                handUi(model.g.dh)
+                handUi(model.ph)
+                handUi(model.dh)
             }
         }
     }
