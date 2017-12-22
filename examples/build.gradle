@@ -41,6 +41,9 @@ dependencies {
     compile "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion"
     compile "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
 
+    // Kotlin immutable collections
+    compile 'org.jetbrains.kotlinx:kotlinx-collections-immutable:0.1'
+
     // Android
     compile 'com.android.support:appcompat-v7:26.1.0'
 
@@ -62,6 +65,7 @@ repositories {
     mavenCentral()
     maven { url 'https://maven.google.com' }
     maven { url 'https://jitpack.io' }
+    maven { url "http://dl.bintray.com/kotlin/kotlinx" }
 }
 kotlin {
     experimental {

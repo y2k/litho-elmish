@@ -1,6 +1,7 @@
 package y2k.litho.elmish.examples
 
 import com.facebook.litho.ComponentLayout.ContainerBuilder
+import com.facebook.yoga.YogaEdge
 import y2k.litho.elmish.examples.ButtonExample.Msg
 import y2k.litho.elmish.examples.ButtonExample.Msg.Decrease
 import y2k.litho.elmish.examples.ButtonExample.Msg.Increase
@@ -24,18 +25,29 @@ class ButtonExample : ElmFunctions<Int, Msg> {
     }
 
     override fun ContainerBuilder.view(model: Int) {
+        backgroundColor(0xFFF0F0F0.toInt())
+
         text {
+            backgroundRes(R.drawable.button_simple)
+            marginDip(YogaEdge.ALL, 2f)
+            textSizeSp(40f)
+
             text("-")
-            textSizeSp(45f)
             onClick(Decrease)
         }
         text {
+            backgroundRes(R.drawable.button_simple)
+            marginDip(YogaEdge.ALL, 2f)
+            textSizeSp(40f)
+
             text("$model")
-            textSizeSp(45f)
         }
         text {
+            backgroundRes(R.drawable.button_simple)
+            marginDip(YogaEdge.ALL, 2f)
+            textSizeSp(40f)
+
             text("+")
-            textSizeSp(45f)
             onClick(Increase)
         }
     }

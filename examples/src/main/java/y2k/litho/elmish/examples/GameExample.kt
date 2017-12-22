@@ -4,18 +4,23 @@ import android.graphics.Color
 import android.graphics.Typeface
 import com.facebook.litho.ComponentLayout.ContainerBuilder
 import com.facebook.yoga.YogaEdge
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.immutableListOf
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.experimental.delay
 import kotlinx.types.Result
 import kotlinx.types.Result.Error
 import kotlinx.types.Result.Ok
+import y2k.litho.elmish.examples.Blackjack.Game
+import y2k.litho.elmish.examples.Blackjack.Hand
 import y2k.litho.elmish.examples.GameExample.Action.*
 import y2k.litho.elmish.examples.GameExample.Model
 import y2k.litho.elmish.examples.GameExample.Msg
 import y2k.litho.elmish.examples.GameExample.Msg.Clicked
 import y2k.litho.elmish.examples.GameExample.Msg.NewGame
-import y2k.litho.elmish.examples.Games.Game
-import y2k.litho.elmish.examples.Games.Hand
 import y2k.litho.elmish.examples.common.Log
+import y2k.litho.elmish.examples.common.button
+import y2k.litho.elmish.examples.common.subList
 import y2k.litho.elmish.experimental.*
 import java.util.*
 
@@ -31,7 +36,7 @@ class GameExample : ElmFunctions<Model, Msg> {
     enum class Action { Deal, Hit, Stay }
 
     override fun init(): Pair<Model, Cmd<Msg>> =
-        Model(Games.createStub()) to Cmd.fromContext({ Games.deal() }, ::NewGame)
+        Model(Blackjack.createStub()) to Cmd.fromContext({ Blackjack.deal() }, ::NewGame)
 
     override fun update(model: Model, msg: Msg): Pair<Model, Cmd<Msg>> = when (msg) {
         is NewGame -> when (msg.game) {
@@ -39,9 +44,9 @@ class GameExample : ElmFunctions<Model, Msg> {
             is Error -> Log.log(msg.game.error, model) to Cmd.none()
         }
         is Clicked -> when (msg.action) {
-            Deal -> model.copy(g = Games.createStub()) to Cmd.fromContext({ Games.deal() }, ::NewGame)
-            Hit -> model.copy(g = Games.hit(model.g)) to Cmd.none()
-            Stay -> model.copy(g = Games.stay(model.g)) to Cmd.none()
+            Deal -> model.copy(g = Blackjack.createStub()) to Cmd.fromContext({ Blackjack.deal() }, ::NewGame)
+            Hit -> model.copy(g = Blackjack.hit(model.g)) to Cmd.none()
+            Stay -> model.copy(g = Blackjack.stay(model.g)) to Cmd.none()
         }
     }
 
@@ -52,7 +57,7 @@ class GameExample : ElmFunctions<Model, Msg> {
             text("Blackjack")
         }
 
-        if (!Games.isStub(model.g)) {
+        if (!Blackjack.isStub(model.g)) {
             buttonBar(model.g)
 
             row {
@@ -67,21 +72,9 @@ class GameExample : ElmFunctions<Model, Msg> {
     private fun ContainerBuilder.buttonBar(g: Game) =
         row {
             button("Deal", Clicked(Deal))
-            button("Hit", Clicked(Hit), !Games.isCanHit(g))
-            button("Stay", Clicked(Stay), !Games.isCanStay(g))
+            button("Hit", Clicked(Hit), !Blackjack.isCanHit(g))
+            button("Stay", Clicked(Stay), !Blackjack.isCanStay(g))
         }
-
-    private fun ContainerBuilder.button(title: String, msg: Msg, disabled: Boolean = false) {
-        if (!disabled)
-            text {
-                marginDip(YogaEdge.RIGHT, 4f)
-                paddingDip(YogaEdge.ALL, 8f)
-                backgroundRes(R.drawable.button_simple)
-                text(title)
-                textSizeSp(30f)
-                onClick(msg)
-            }
-    }
 
     private fun ContainerBuilder.handUi(h: Hand) =
         column {
@@ -111,14 +104,14 @@ class GameExample : ElmFunctions<Model, Msg> {
         }
 }
 
-object Games {
+object Blackjack {
 
-    data class Game(val ph: Hand, val dh: Hand, val deck: List<Card>)
-    data class Hand(val cards: List<Card>, val name: String)
+    data class Game(val ph: Hand, val dh: Hand, val deck: ImmutableList<Card>)
+    data class Hand(val cards: ImmutableList<Card>, val name: String)
     data class Card(val name: String, val value: Int)
 
     fun createStub(): Game =
-        Game(Hand(emptyList(), ""), Hand(emptyList(), ""), emptyList())
+        Game(Hand(immutableListOf(), ""), Hand(immutableListOf(), ""), immutableListOf())
 
     suspend fun deal(): Game {
         delay(300) // Fake delay for shuffle
@@ -128,9 +121,9 @@ object Games {
     private fun deal(random: Long): Game {
         val deck = createDeck(random)
         return Game(
-            ph = Hand(deck.take(2), "Player"),
-            dh = Hand(deck.drop(2).take(2), "Dialer"),
-            deck = deck.drop(4))
+            ph = Hand(deck.subList(0, 2), "Player"),
+            dh = Hand(deck.subList(2).subList(0, 2), "Dialer"),
+            deck = deck.subList(4))
     }
 
     private val numberOfDecks = 8
@@ -138,36 +131,36 @@ object Games {
     private val ranks = listOf("2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King", "Ace")
     private val value = listOf(2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 1)
 
-    private fun createDeck(random: Long): List<Card> =
+    private fun createDeck(random: Long): ImmutableList<Card> =
         (1..numberOfDecks)
             .flatMap {
-                suits
-                    .flatMap { suit ->
-                        ranks.map { rank ->
-                            Card(
-                                name = rank + " of " + suit,
-                                value = value[ranks.indexOf(rank)])
-                        }
+                suits.flatMap { suit ->
+                    ranks.map { rank ->
+                        Card(
+                            name = rank + " of " + suit,
+                            value = value[ranks.indexOf(rank)])
                     }
+                }
             }
             .shuffled(Random(random))
+            .toImmutableList()
 
     fun hit(game: Game): Game {
         if (isStub(game) || game.ph.isWinOrLost || game.dh.isWin) return game
 
-        val playerCard = game.deck.take(1)
-        val newPlayerCards = game.ph.cards + playerCard
+        val playerCard = game.deck.subList(0, 1)
+        val newPlayerCards = game.ph.cards.addAll(playerCard)
 
         if (newPlayerCards.isLost || game.isDealerNeedStop || game.dh.sum >= newPlayerCards.sum)
             return game.copy(
                 ph = game.ph.copy(cards = newPlayerCards),
-                deck = game.deck.drop(1))
+                deck = game.deck.subList(1))
 
-        val dealerCard = game.deck.drop(1).take(1)
+        val dealerCard = game.deck.subList(1, 2)
         return game.copy(
             ph = game.ph.copy(cards = newPlayerCards),
-            dh = game.dh.copy(cards = game.dh.cards + dealerCard),
-            deck = game.deck.drop(2))
+            dh = game.dh.copy(cards = game.dh.cards.addAll(dealerCard)),
+            deck = game.deck.subList(2))
     }
 
     fun stay(game: Game): Game {
@@ -175,11 +168,11 @@ object Games {
             || game.ph.isWinOrLost
             || game.dh.isWinOrLost
             || game.dh.sum >= game.ph.sum) return game
-        val dealerCard = game.deck.take(1)
+        val dealerCard = game.deck.subList(0, 1)
         return game
             .copy(
-                dh = game.dh.copy(cards = game.dh.cards + dealerCard),
-                deck = game.deck.drop(1))
+                dh = game.dh.copy(cards = game.dh.cards.addAll(dealerCard)),
+                deck = game.deck.subList(1))
             .let(::stay)
     }
 

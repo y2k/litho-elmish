@@ -8,7 +8,9 @@ import android.graphics.Color
 import com.facebook.drawee.backends.pipeline.Fresco
 import com.facebook.litho.ComponentLayout.ContainerBuilder
 import com.facebook.soloader.SoLoader
+import com.facebook.yoga.YogaEdge
 import dalvik.system.DexFile
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.experimental.channels.SendChannel
 import kotlinx.types.Result
 import okhttp3.*
@@ -19,13 +21,26 @@ import okhttp3.ws.WebSocketListener
 import okio.Buffer
 import y2k.litho.elmish.examples.BuildConfig
 import y2k.litho.elmish.examples.Functions
-import y2k.litho.elmish.experimental.column
-import y2k.litho.elmish.experimental.editText
-import y2k.litho.elmish.experimental.onTextChanged
-import y2k.litho.elmish.experimental.text
+import y2k.litho.elmish.examples.R
+import y2k.litho.elmish.experimental.*
 import java.io.IOException
 import java.io.Serializable
 import java.net.URL
+
+fun ContainerBuilder.button(title: String, msg: Any, disabled: Boolean = false) {
+    if (!disabled)
+        text {
+            marginDip(YogaEdge.ALL, 2f)
+            paddingDip(YogaEdge.ALL, 4f)
+            backgroundRes(R.drawable.button_simple)
+            text(title)
+            textSizeSp(30f)
+            onClick(msg)
+        }
+}
+
+fun <E> ImmutableList<E>.subList(fromIndex: Int): ImmutableList<E> =
+    subList(fromIndex, size)
 
 object SocketLifetime {
 
