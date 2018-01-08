@@ -13,6 +13,10 @@ typealias Contextual<T> = (ComponentContext) -> T
 @Target(AnnotationTarget.TYPE)
 annotation class LithoElmishDslMarker
 
+inline fun <T : Component.Builder<*, *>> T.style(applyStyle: (T) -> Unit) {
+    applyStyle(this)
+}
+
 inline fun FrescoImage.Builder.frescoController(f: (@LithoElmishDslMarker PipelineDraweeControllerBuilder).() -> Unit) {
     controller(
         Fresco

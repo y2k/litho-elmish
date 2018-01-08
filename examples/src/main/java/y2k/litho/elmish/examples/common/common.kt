@@ -7,6 +7,7 @@ import android.content.Intent
 import android.graphics.Color
 import com.facebook.drawee.backends.pipeline.Fresco
 import com.facebook.litho.ComponentLayout.ContainerBuilder
+import com.facebook.litho.widget.Text
 import com.facebook.soloader.SoLoader
 import com.facebook.yoga.YogaEdge
 import dalvik.system.DexFile
@@ -26,6 +27,15 @@ import y2k.litho.elmish.experimental.*
 import java.io.IOException
 import java.io.Serializable
 import java.net.URL
+
+object Styles {
+
+    fun label(builder: Text.Builder) {
+        builder.backgroundRes(R.drawable.button_simple)
+        builder.marginDip(YogaEdge.ALL, 2f)
+        builder.textSizeSp(40f)
+    }
+}
 
 fun ContainerBuilder.button(title: String, msg: Any, disabled: Boolean = false) {
     if (!disabled)

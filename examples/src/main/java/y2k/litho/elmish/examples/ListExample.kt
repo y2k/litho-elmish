@@ -5,7 +5,9 @@ import kotlinx.coroutines.experimental.delay
 import y2k.litho.elmish.examples.ListExample.Model
 import y2k.litho.elmish.examples.ListExample.Msg
 import y2k.litho.elmish.examples.ListExample.Msg.*
+import y2k.litho.elmish.examples.common.Styles
 import y2k.litho.elmish.experimental.*
+import y2k.litho.elmish.experimental.Views.column
 import java.util.*
 
 class ListExample : ElmFunctions<Model, Msg> {
@@ -18,28 +20,26 @@ class ListExample : ElmFunctions<Model, Msg> {
         object UpdateMsg : Msg()
         class NowUpdatedMsg(val rnd: Long) : Msg()
         class ItemsMsg(val xs: List<Unit>) : Msg()
+        class ErrorMsg : Msg()
     }
 
     override fun init(): Pair<Model, Cmd<Msg>> {
         val binder = ContextualRecyclerBinder(::viewItem, Service.notComparableStub)
-        return Model(0, binder) to Cmd.fromSuspend({ Service.loadData() }, ::ItemsMsg)
+        return Model(0, binder) to Cmd.fromSuspend({ Service.loadData() }, ::ItemsMsg, ::ErrorMsg)
     }
 
     override fun update(model: Model, msg: Msg): Pair<Model, Cmd<Msg>> = when (msg) {
-        UpdateMsg -> model to Cmd.fromSuspend({ Service.getNow() }, ::NowUpdatedMsg)
+        UpdateMsg -> model to Cmd.fromSuspend({ Service.getNow() }, ::NowUpdatedMsg, ::ErrorMsg)
         is NowUpdatedMsg -> model.copy(rnd = msg.rnd) to Cmd.none()
         is ItemsMsg -> model.copy(binder = model.binder.copy(msg.xs)) to Cmd.none()
+        is ErrorMsg -> model to Cmd.none()
     }
 
     override fun ContainerBuilder.view(model: Model) {
-        column {
-            backgroundRes(android.R.drawable.btn_default)
+        text {
+            style(Styles::label)
+            text("[${model.rnd}]")
             onClick(UpdateMsg)
-
-            text {
-                text("UPDATED (${model.rnd})")
-                textSizeSp(30f)
-            }
         }
         recyclerView {
             binder(model.binder)
@@ -47,13 +47,11 @@ class ListExample : ElmFunctions<Model, Msg> {
     }
 
     private fun viewItem(ignore: Unit) =
-        Views.column {
-            backgroundRes(android.R.drawable.btn_default)
-            onClick(UpdateMsg)
-
+        column {
             text {
+                style(Styles::label)
                 text("[BUTTON]")
-                textSizeSp(30f)
+                onClick(UpdateMsg)
             }
         }
 }

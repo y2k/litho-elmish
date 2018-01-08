@@ -21,23 +21,19 @@ object Screen : ElmFunctions<Int, Msg> {
         Decrease -> (model - 1) to Cmd.none()
     }
 
-    override fun view(model: Int) =
-        column {
-            text {
-                text("-")
-                textSizeSp(45f)
-                onClick(Decrease)
-            }
-            text {
-                text("$model")
-                textSizeSp(45f)
-            }
-            text {
-                text("+")
-                textSizeSp(45f)
-                onClick(Increase)
-            }
+    override fun ContainerBuilder.view(model: Int) {
+        text {
+            text("-")
+            onClick(Decrease)
         }
+        text {
+            text("$model")
+        }
+        text {
+            text("+")
+            onClick(Increase)
+        }
+    }
 }
 ```
 

@@ -12,6 +12,7 @@ import y2k.litho.elmish.examples.HttpExample.Msg.MorePlease
 import y2k.litho.elmish.examples.HttpExample.Msg.NewGif
 import y2k.litho.elmish.examples.common.Decode
 import y2k.litho.elmish.examples.common.Http
+import y2k.litho.elmish.examples.common.Styles
 import y2k.litho.elmish.experimental.*
 
 /**
@@ -51,8 +52,8 @@ class HttpExample : ElmFunctions<Model, Msg> {
             }
         }
         text {
+            style(Styles::label)
             text("More Please!")
-            textSizeSp(30f)
             onClick(MorePlease)
         }
     }
