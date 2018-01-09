@@ -45,12 +45,6 @@ interface Cmd<out T> {
                 suspend override fun handle(ctx: Context): T? = null
             }
 
-        @Deprecated("")
-        fun <R, T> fromSuspend(f: suspend () -> R, fOk: (R) -> T): Cmd<T> =
-            object : Cmd<T> {
-                suspend override fun handle(ctx: Context): T = fOk(f())
-            }
-
         fun <R, T> fromContext(f: suspend (Context) -> R, callback: (Result<R, Exception>) -> T): Cmd<T> =
             object : Cmd<T> {
                 suspend override fun handle(ctx: Context): T =

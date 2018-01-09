@@ -5,11 +5,8 @@ import com.facebook.litho.ComponentLayout.ContainerBuilder
 import com.facebook.yoga.YogaEdge.ALL
 import kotlinx.coroutines.experimental.delay
 import kotlinx.types.Result
-import kotlinx.types.Result.Error
-import kotlinx.types.Result.Ok
-import y2k.litho.elmish.examples.FormFunctions.FeedbackErrors
-import y2k.litho.elmish.examples.FormFunctions.FeedbackErrors.FailureNetwork
-import y2k.litho.elmish.examples.FormFunctions.FeedbackErrors.FailureServer
+import y2k.litho.elmish.examples.FormFunctions.FeedbackResponse
+import y2k.litho.elmish.examples.FormFunctions.FeedbackResponse.*
 import y2k.litho.elmish.examples.FormFunctions.toDomainModel
 import y2k.litho.elmish.examples.FormFunctions.validateForEmpty
 import y2k.litho.elmish.examples.FormScreen.Model
@@ -17,6 +14,7 @@ import y2k.litho.elmish.examples.FormScreen.Msg
 import y2k.litho.elmish.examples.FormScreen.Msg.*
 import y2k.litho.elmish.examples.common.editTextWithLabel
 import y2k.litho.elmish.examples.common.map3Option
+import y2k.litho.elmish.examples.common.valueOrDefault
 import y2k.litho.elmish.examples.common.zipOption
 import y2k.litho.elmish.experimental.*
 import java.util.*
@@ -28,7 +26,7 @@ class FormScreen : ElmFunctions<Model, Msg> {
         class FullNameChanged(val x: String) : Msg()
         class EmailChanged(val x: String) : Msg()
         object Send : Msg()
-        class SendResult(val result: Result<Unit, FeedbackErrors>) : Msg()
+        class SendResult(val result: Result<FeedbackResponse, *>) : Msg()
     }
 
     data class Model(
@@ -36,7 +34,7 @@ class FormScreen : ElmFunctions<Model, Msg> {
         val fullName: String? = null,
         val email: String? = null,
         val inProgress: Boolean = false,
-        val finishStatus: Result<Unit, FeedbackErrors>? = null)
+        val finishStatus: FeedbackResponse? = null)
 
     override fun init(): Pair<Model, Cmd<Msg>> = Model() to Cmd.none()
 
@@ -52,11 +50,12 @@ class FormScreen : ElmFunctions<Model, Msg> {
             if (sendModel == null) model to Cmd.none()
             else {
                 model.copy(finishStatus = null, inProgress = true) to
-                    Cmd.fromSuspend({ FormFunctions.sendFeedback(sendModel) }, ::SendResult)
+                    Cmd.fromContext({ FormFunctions.sendFeedback(sendModel) }, ::SendResult)
             }
         }
-        is SendResult ->
-            model.copy(finishStatus = msg.result, inProgress = false) to Cmd.none()
+        is SendResult -> model.copy(
+            finishStatus = msg.result.valueOrDefault { UnknownError },
+            inProgress = false) to Cmd.none()
     }
 
     override fun ContainerBuilder.view(model: Model) {
@@ -89,23 +88,27 @@ class FormScreen : ElmFunctions<Model, Msg> {
             }
 
         when (model.finishStatus) {
-            is Ok ->
+            null -> column { }
+            Success ->
                 text {
                     text("Feedback was successfully sent")
                     textSizeSp(20f)
                 }
-            is Error ->
+            else ->
                 text {
-                    text(model.finishStatus.error.toUserMessage())
+                    text(model.finishStatus.toUserMessage())
                     textSizeSp(20f)
                     textColor(Color.RED)
                 }
+
         }
     }
 
-    private fun FeedbackErrors.toUserMessage() = when (this) {
+    private fun FeedbackResponse.toUserMessage() = when (this) {
         is FailureNetwork -> "Network error"
         is FailureServer -> "Server error"
+        Success -> "Success"
+        UnknownError -> "Unknown error"
     }
 }
 
@@ -114,9 +117,11 @@ object FormFunctions {
     fun validateForEmpty(x: String?): String? =
         if (x.isNullOrBlank()) null else x
 
-    sealed class FeedbackErrors {
-        class FailureNetwork(val message: String) : FeedbackErrors()
-        class FailureServer(val message: String) : FeedbackErrors()
+    sealed class FeedbackResponse {
+        object Success : FeedbackResponse()
+        class FailureNetwork(val message: String) : FeedbackResponse()
+        class FailureServer(val message: String) : FeedbackResponse()
+        object UnknownError : FeedbackResponse()
     }
 
     class FeedbackSendModel(
@@ -130,13 +135,14 @@ object FormFunctions {
             .zipOption(presentModel.email)
             .map3Option(::FeedbackSendModel)
 
-    suspend fun sendFeedback(x: FeedbackSendModel): Result<Unit, FeedbackErrors> {
+    suspend fun sendFeedback(x: FeedbackSendModel): FeedbackResponse {
         println("Send feedback: ${x.message}, ${x.fullName}, ${x.email}")
         delay(1000)
-        return when (Random().nextInt(3)) {
-            0 -> Error(FailureNetwork("..."))
-            1 -> Error(FailureServer("..."))
-            else -> Ok(Unit)
+        return when (Random().nextInt(4)) {
+            0 -> FailureNetwork("...")
+            1 -> FailureServer("...")
+            2 -> throw Exception()
+            else -> Success
         }
     }
 }

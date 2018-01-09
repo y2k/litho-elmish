@@ -5,7 +5,6 @@ import kotlinx.coroutines.experimental.*
 import kotlinx.coroutines.experimental.channels.SendChannel
 import kotlinx.coroutines.experimental.channels.actor
 import kotlinx.types.Result
-import kotlinx.types.Result.Error
 import kotlinx.types.Result.Ok
 import org.json.JSONObject
 import y2k.litho.elmish.examples.common.SocketLifetime.WebSocketCmd.*
@@ -45,28 +44,24 @@ object Http {
     fun <T> get(url: String, decoder: Decoder<T>): Request<T> =
         Request(url, decoder)
 
-    fun <T, TMsg> send(msgFactory: (Result<T, String>) -> TMsg, request: Request<T>): Cmd<TMsg> {
+    fun <T, TMsg> send(msgFactory: (Result<T, Exception>) -> TMsg, request: Request<T>): Cmd<TMsg> {
         return Cmd
-            .fromSuspend({
-                kotlinx.coroutines.experimental.run(AsyncTask.THREAD_POOL_EXECUTOR.asCoroutineDispatcher()) {
-                    try {
-                        val json = URL(request.url).readText()
-                        val t = request.decoder(json)
-                        Ok(t)
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                        Error("$e")
-                    }
+            .fromContext({
+                withContext(AsyncTask.THREAD_POOL_EXECUTOR.asCoroutineDispatcher()) {
+                    URL(request.url)
+                        .readText()
+                        .let(request.decoder)
                 }
             }, msgFactory)
     }
+
 }
 
 object Time {
 
     fun <T> every(period: Long, f: (Long) -> T): Sub<T> = TimeSub(period, f)
 
-    private class TimeSub<T>(
+    private class TimeSub<out T>(
         private val period: Long,
         private val f: (Long) -> T) : Sub<T> {
 
@@ -197,7 +192,7 @@ object WebSocket {
     fun <T> listen(url: URL, convert: (String) -> T): Sub<T> =
         WebSocketSub(url, convert)
 
-    private class WebSocketSub<T>(val url: URL, val convert: (String) -> T) : Sub<T> {
+    private class WebSocketSub<out T>(val url: URL, val convert: (String) -> T) : Sub<T> {
         override fun start(target: SendChannel<T>): Job =
             listen(url, convert, target)
 

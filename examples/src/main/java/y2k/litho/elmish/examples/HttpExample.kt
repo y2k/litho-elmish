@@ -12,6 +12,7 @@ import y2k.litho.elmish.examples.HttpExample.Msg.MorePlease
 import y2k.litho.elmish.examples.HttpExample.Msg.NewGif
 import y2k.litho.elmish.examples.common.Decode
 import y2k.litho.elmish.examples.common.Http
+import y2k.litho.elmish.examples.common.Log.log
 import y2k.litho.elmish.examples.common.Styles
 import y2k.litho.elmish.experimental.*
 
@@ -24,7 +25,7 @@ class HttpExample : ElmFunctions<Model, Msg> {
 
     sealed class Msg {
         object MorePlease : Msg()
-        class NewGif(val result: Result<String, String>) : Msg()
+        class NewGif(val result: Result<String, Exception>) : Msg()
     }
 
     override fun init(): Pair<Model, Cmd<Msg>> {
@@ -36,7 +37,7 @@ class HttpExample : ElmFunctions<Model, Msg> {
         MorePlease -> model to getRandomGif(model.topic)
         is NewGif -> when (msg.result) {
             is Ok -> model.copy(gifUrl = msg.result.value) to Cmd.none()
-            is Error -> model to Cmd.none()
+            is Error -> log(msg.result.error, model) to Cmd.none()
         }
     }
 

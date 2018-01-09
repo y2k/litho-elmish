@@ -147,8 +147,8 @@ object ClassAnalyzer {
             .let { Regex("$it\\.\\w+") }
 
         val dexFile = DexFile(context.packageCodePath)
-        try {
-            return dexFile
+        return try {
+            dexFile
                 .entries()
                 .asSequence()
                 .filter(regex::matches)
@@ -186,6 +186,11 @@ inline fun <T1, T2, T3, R> Pair<Pair<T1?, T2?>?, T3?>?.map3Option(f: (T1, T2, T3
     val c = second
     if (a == null || b == null || c == null) return null
     return f(a, b, c)
+}
+
+fun <T, E> Result<T, E>.valueOrDefault(f: (E) -> T): T = when (this) {
+    is Result.Ok -> value
+    is Result.Error -> f(error)
 }
 
 class App : Application() {

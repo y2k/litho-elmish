@@ -7,7 +7,7 @@ import android.os.StrictMode
 import com.facebook.litho.ComponentLayout.ContainerBuilder
 import com.facebook.yoga.YogaEdge.ALL
 import kotlinx.coroutines.experimental.CommonPool
-import kotlinx.coroutines.experimental.run
+import kotlinx.coroutines.experimental.withContext
 import kotlinx.types.Result
 import kotlinx.types.Result.Error
 import kotlinx.types.Result.Ok
@@ -70,7 +70,7 @@ object Functions {
     class Example(val name: String, val cls: Class<ElmFunctions<*, *>>) : Serializable
 
     suspend fun findExamples(context: Context): List<Example> =
-        run(CommonPool) {
+        withContext(CommonPool) {
             ClassAnalyzer
                 .getClassesInPackage(context, javaClass.`package`)
                 .filter(::checkItElmFunctions)
