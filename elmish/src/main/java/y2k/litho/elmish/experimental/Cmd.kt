@@ -10,6 +10,7 @@ interface Cmd<out T> {
     suspend fun handle(ctx: Context): T?
 
     companion object {
+
         fun <T> fromSuspend(f: suspend () -> Unit): Cmd<T> =
             object : Cmd<T> {
                 suspend override fun handle(ctx: Context): T? {
@@ -53,6 +54,16 @@ interface Cmd<out T> {
                     } catch (e: Exception) {
                         e.printStackTrace()
                         callback(Error(e))
+                    }
+            }
+
+        fun <R, T> fromContext(f: suspend (Context) -> R, fOk: (R) -> T, fError: (Exception) -> T): Cmd<T> =
+            object : Cmd<T> {
+                suspend override fun handle(ctx: Context): T =
+                    try {
+                        fOk(f(ctx))
+                    } catch (e: Exception) {
+                        fError(e)
                     }
             }
 
