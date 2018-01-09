@@ -67,14 +67,13 @@ interface Cmd<out T> {
                     }
             }
 
-        fun <R, T> fromSuspend(f: suspend () -> R, fOk: (R) -> T, fError: () -> T): Cmd<T> =
+        fun <R, T> fromSuspend(f: suspend () -> R, fOk: (R) -> T, fError: (Exception) -> T): Cmd<T> =
             object : Cmd<T> {
                 suspend override fun handle(ctx: Context): T =
                     try {
                         fOk(f())
                     } catch (e: Exception) {
-                        e.printStackTrace()
-                        fError()
+                        fError(e)
                     }
             }
     }
