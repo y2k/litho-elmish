@@ -5,6 +5,7 @@ import kotlinx.coroutines.experimental.delay
 import y2k.litho.elmish.examples.ListExample.Model
 import y2k.litho.elmish.examples.ListExample.Msg
 import y2k.litho.elmish.examples.ListExample.Msg.*
+import y2k.litho.elmish.examples.common.Log.log
 import y2k.litho.elmish.examples.common.Styles
 import y2k.litho.elmish.experimental.*
 import y2k.litho.elmish.experimental.Views.column
@@ -20,7 +21,7 @@ class ListExample : ElmFunctions<Model, Msg> {
         object UpdateMsg : Msg()
         class NowUpdatedMsg(val rnd: Long) : Msg()
         class ItemsMsg(val xs: List<Unit>) : Msg()
-        class ErrorMsg : Msg()
+        class ErrorMsg(val e: Exception) : Msg()
     }
 
     override fun init(): Pair<Model, Cmd<Msg>> {
@@ -32,7 +33,7 @@ class ListExample : ElmFunctions<Model, Msg> {
         UpdateMsg -> model to Cmd.fromSuspend({ Service.getNow() }, ::NowUpdatedMsg, ::ErrorMsg)
         is NowUpdatedMsg -> model.copy(rnd = msg.rnd) to Cmd.none()
         is ItemsMsg -> model.copy(binder = model.binder.copy(msg.xs)) to Cmd.none()
-        is ErrorMsg -> model to Cmd.none()
+        is ErrorMsg -> log(msg.e, model) to Cmd.none()
     }
 
     override fun ContainerBuilder.view(model: Model) {

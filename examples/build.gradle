@@ -31,6 +31,15 @@ android {
     }
 }
 
+kotlin.experimental.coroutines "enable"
+
+repositories {
+    mavenCentral()
+    maven { url 'https://maven.google.com' }
+    maven { url 'https://jitpack.io' }
+    maven { url 'https://dl.bintray.com/kotlin/kotlinx' }
+}
+
 dependencies {
     compile project(":elmish")
 
@@ -60,15 +69,4 @@ dependencies {
 
     // Kotlin Result
     compile 'com.github.y2k:KotlinResult:031063116e'
-}
-repositories {
-    mavenCentral()
-    maven { url 'https://maven.google.com' }
-    maven { url 'https://jitpack.io' }
-    maven { url "http://dl.bintray.com/kotlin/kotlinx" }
-}
-kotlin {
-    experimental {
-        coroutines "enable"
-    }
 }
