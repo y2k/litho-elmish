@@ -13,7 +13,9 @@
             android:name=".common.App"
             android:theme="@style/AppTheme">
 
-        <activity android:name=".ExampleListActivity" android:label="Elm examples">
+        <activity android:name=".ExampleListActivity"
+                  android:screenOrientation="portrait"
+                  android:label="Elm examples">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>

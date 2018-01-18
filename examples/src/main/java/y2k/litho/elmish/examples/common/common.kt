@@ -9,10 +9,15 @@ import com.facebook.drawee.backends.pipeline.Fresco
 import com.facebook.litho.ComponentLayout.ContainerBuilder
 import com.facebook.litho.widget.Text
 import com.facebook.soloader.SoLoader
+import com.facebook.yoga.YogaAlign
 import com.facebook.yoga.YogaEdge
+import com.facebook.yoga.YogaJustify
+import com.facebook.yoga.YogaPositionType
 import dalvik.system.DexFile
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.coroutines.experimental.DefaultDispatcher
 import kotlinx.coroutines.experimental.channels.SendChannel
+import kotlinx.coroutines.experimental.withContext
 import kotlinx.types.Result
 import okhttp3.*
 import okhttp3.Request
@@ -34,6 +39,21 @@ object Styles {
         builder.backgroundRes(R.drawable.button_simple)
         builder.marginDip(YogaEdge.ALL, 2f)
         builder.textSizeSp(40f)
+    }
+}
+
+fun ContainerBuilder.fullscreenProgress() {
+    column {
+        backgroundRes(R.color.colorPrimary)
+        positionType(YogaPositionType.ABSOLUTE)
+        positionDip(YogaEdge.ALL, 0f)
+        alignItems(YogaAlign.CENTER)
+        justifyContent(YogaJustify.CENTER)
+
+        progress {
+            widthDip(100f)
+            heightDip(100f)
+        }
     }
 }
 
@@ -141,33 +161,36 @@ object Navigation {
 
 object ClassAnalyzer {
 
-    suspend fun getClassesInPackage(context: Context, pkg: Package): Sequence<Class<*>> {
-        val regex = pkg.name
-            .let(Regex.Companion::escape)
-            .let { Regex("$it\\.\\w+") }
+    suspend fun getClassesInPackage(context: Context, pkg: Package): List<Class<*>> =
+        withContext(DefaultDispatcher) {
+            val regex = pkg.name
+                .let(Regex.Companion::escape)
+                .let { Regex("$it\\.\\w+") }
 
-        val dexFile = DexFile(context.packageCodePath)
-        return try {
-            dexFile
-                .entries()
-                .asSequence()
-                .filter(regex::matches)
-                .map(javaClass.classLoader::loadClass)
-        } finally {
-            dexFile.close()
+            @Suppress("DEPRECATION")
+            val dexFile = DexFile(context.packageCodePath)
+            try {
+                dexFile
+                    .entries()
+                    .asSequence()
+                    .filter(regex::matches)
+                    .map(javaClass.classLoader::loadClass)
+                    .toList()
+            } finally {
+                dexFile.close()
+            }
         }
-    }
 }
 
 fun ContainerBuilder.editTextWithLabel(
-    hint: String, cmd: (String) -> Any, error: String?) {
+    hint: String, msg: (String) -> Any, error: String?) {
     column {
         editText {
             hint(hint)
             textSizeSp(30f)
             isSingleLine(true)
 
-            onTextChanged(cmd)
+            onTextChanged(msg)
         }
         text {
             textColor(Color.RED)
@@ -193,6 +216,7 @@ fun <T, E> Result<T, E>.valueOrDefault(f: (E) -> T): T = when (this) {
     is Result.Error -> f(error)
 }
 
+@Suppress("unused")
 class App : Application() {
 
     override fun onCreate() {

@@ -73,19 +73,23 @@ object Functions {
         withContext(CommonPool) {
             ClassAnalyzer
                 .getClassesInPackage(context, javaClass.`package`)
-                .filter(::checkItElmFunctions)
-                .filterIsInstance<Class<ElmFunctions<*, *>>>()
-                .map { Example(name = getDisplayName(it), cls = it) }
-                .toList()
+                .let(::filterExamples)
         }
+
+    private fun filterExamples(classes: List<Class<*>>): List<Example> =
+        classes
+            .filter(::checkItElmFunctions)
+            .filterIsInstance<Class<ElmFunctions<*, *>>>()
+            .map { Example(name = getDisplayName(it), cls = it) }
+            .toList()
+
+    private fun checkItElmFunctions(cls: Class<*>): Boolean =
+        ElmFunctions::class.java.isAssignableFrom(cls)
+            && cls.constructors.any { it.parameterTypes.isEmpty() }
+            && Modifier.isPublic(cls.getDeclaredConstructor().modifiers)
 
     private fun getDisplayName(cls: Class<*>): String =
         "${cls.simpleName}.kt"
-
-    private fun checkItElmFunctions(cls: Class<*>): Boolean =
-        ElmFunctions::class.java.isAssignableFrom(cls) &&
-            cls.constructors.any { it.parameterTypes.isEmpty() } &&
-            Modifier.isPublic(cls.getDeclaredConstructor().modifiers)
 }
 
 class ExampleListActivity : Activity() {
@@ -93,7 +97,8 @@ class ExampleListActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         StrictMode.enableDefaults()
-        program<ExampleList>()
+//        program<ExampleList>()
+        program<SearchExample>()
     }
 }
 

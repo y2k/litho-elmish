@@ -13,7 +13,7 @@ interface Cmd<out T> {
 
         fun <T> fromSuspend(f: suspend () -> Unit): Cmd<T> =
             object : Cmd<T> {
-                suspend override fun handle(ctx: Context): T? {
+                override suspend fun handle(ctx: Context): T? {
                     f()
                     return null
                 }
@@ -21,7 +21,7 @@ interface Cmd<out T> {
 
         fun <T> fromContext(f: suspend (Context) -> Unit): Cmd<T> =
             object : Cmd<T> {
-                suspend override fun handle(ctx: Context): T? {
+                override suspend fun handle(ctx: Context): T? {
                     f(ctx)
                     return null
                 }
@@ -32,7 +32,7 @@ interface Cmd<out T> {
          */
         fun <T> batch(vararg commands: Cmd<T>): Cmd<T> =
             object : Cmd<T> {
-                suspend override fun handle(ctx: Context): T? {
+                override suspend fun handle(ctx: Context): T? {
                     var last: T? = null
                     for (cmd in commands) {
                         last = cmd.handle(ctx)
@@ -41,14 +41,15 @@ interface Cmd<out T> {
                 }
             }
 
-        fun <T> none(): Cmd<T> =
-            object : Cmd<T> {
-                suspend override fun handle(ctx: Context): T? = null
-            }
+        private val instanceOfNone = object : Cmd<Nothing> {
+            override suspend fun handle(ctx: Context): Nothing? = null
+        }
+
+        fun <T> none(): Cmd<T> = instanceOfNone
 
         fun <R, T> fromContext(f: suspend (Context) -> R, callback: (Result<R, Exception>) -> T): Cmd<T> =
             object : Cmd<T> {
-                suspend override fun handle(ctx: Context): T =
+                override suspend fun handle(ctx: Context): T =
                     try {
                         callback(Ok(f(ctx)))
                     } catch (e: Exception) {
@@ -59,7 +60,7 @@ interface Cmd<out T> {
 
         fun <R, T> fromContext(f: suspend (Context) -> R, fOk: (R) -> T, fError: (Exception) -> T): Cmd<T> =
             object : Cmd<T> {
-                suspend override fun handle(ctx: Context): T =
+                override suspend fun handle(ctx: Context): T =
                     try {
                         fOk(f(ctx))
                     } catch (e: Exception) {
@@ -69,7 +70,7 @@ interface Cmd<out T> {
 
         fun <R, T> fromSuspend(f: suspend () -> R, fOk: (R) -> T, fError: (Exception) -> T): Cmd<T> =
             object : Cmd<T> {
-                suspend override fun handle(ctx: Context): T =
+                override suspend fun handle(ctx: Context): T =
                     try {
                         fOk(f())
                     } catch (e: Exception) {

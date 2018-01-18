@@ -2,7 +2,7 @@
 
 buildscript {
     ext.kotlin_version = '1.2.20'
-    ext.coroutinesVersion = '0.21'
+    ext.coroutinesVersion = '0.21.2'
     repositories {
         jcenter()
     }
