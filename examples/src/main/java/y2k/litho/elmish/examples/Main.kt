@@ -97,8 +97,7 @@ class ExampleListActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         StrictMode.enableDefaults()
-//        program<ExampleList>()
-        program<SearchExample>()
+        program<ExampleList>()
     }
 }
 
