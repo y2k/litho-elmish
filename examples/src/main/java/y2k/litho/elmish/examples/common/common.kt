@@ -58,15 +58,16 @@ fun ContainerBuilder.fullscreenProgress() {
 }
 
 fun ContainerBuilder.button(title: String, msg: Any, disabled: Boolean = false) {
-    if (!disabled)
-        text {
-            marginDip(YogaEdge.ALL, 2f)
-            paddingDip(YogaEdge.ALL, 4f)
-            backgroundRes(R.drawable.button_simple)
-            text(title)
-            textSizeSp(30f)
-            onClick(msg)
-        }
+    text {
+        marginDip(YogaEdge.ALL, 2f)
+        paddingDip(YogaEdge.ALL, 4f)
+        backgroundRes(R.drawable.button_simple)
+        textColor(if (disabled) Color.LTGRAY else Color.BLACK)
+        textSizeSp(30f)
+        text(title)
+
+        if (!disabled) onClick(msg)
+    }
 }
 
 fun <E> ImmutableList<E>.subList(fromIndex: Int): ImmutableList<E> =
