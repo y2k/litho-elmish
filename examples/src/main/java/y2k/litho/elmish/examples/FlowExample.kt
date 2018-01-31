@@ -10,6 +10,7 @@ import y2k.litho.elmish.examples.FlowExample.Msg.InputChanged
 import y2k.litho.elmish.examples.FlowExample.Msg.ToNextStage
 import y2k.litho.elmish.examples.FlowExample.Stage.*
 import y2k.litho.elmish.examples.common.button
+import y2k.litho.elmish.examples.common.Сmd
 import y2k.litho.elmish.experimental.*
 
 object FlowExample {
@@ -29,18 +30,21 @@ object FlowExample {
         class ToNextStage(val current: Stage) : Msg()
     }
 
-    fun init(): Pair<Model, Cmd2<Msg>> = Model() to null
+    fun init(): Pair<Model, Сmd<Msg>> = Model() to null
 
-    fun update(model: Model, msg: Msg): Pair<Model, Cmd2<Msg>> = when (msg) {
-        is InputChanged -> model.copy(input = msg.input, isInputValid = msg.input.isNotBlank())
+    fun update(model: Model, msg: Msg): Pair<Model, Сmd<Msg>> = when (msg) {
+        is InputChanged ->
+            model.copy(input = msg.input, isInputValid = FlowDomain.validate(model.stage, msg.input))
         is ToNextStage -> when (msg.current) {
-            Home -> model.input
-                .tryToIntRange(1..99)
-                ?.let { Model(Addresses, itemNumbers = it) } ?: model
-            Addresses -> model
-                .copy(shippingAddresses = model.shippingAddresses + model.input, input = "")
-                .let { it.copy(stage = if (it.shippingAddresses.size == it.itemNumbers) Billing else Addresses) }
-            Billing -> model.copy(stage = Home, billingAddress = model.input, input = "")
+            Home ->
+                Model(Addresses, itemNumbers = model.input.toInt())
+            Addresses ->
+                model.copy(
+                    stage = if (model.shippingAddresses.size + 1 == model.itemNumbers) Billing else Addresses,
+                    shippingAddresses = model.shippingAddresses + model.input,
+                    input = "")
+            Billing ->
+                model.copy(stage = Home, billingAddress = model.input, input = "")
         }
     } to null
 
@@ -50,7 +54,7 @@ object FlowExample {
 
         when (model.stage) {
             Home -> homeView(model)
-            Addresses -> addressView(model)
+            Addresses -> addressesView(model)
             Billing -> billingView(model)
         }
     }
@@ -70,11 +74,11 @@ object FlowExample {
 
         text {
             textSizeSp(16f)
-            text(model.makeBillingMessage())
+            text(FlowDomain.makeBillingMessage(model))
         }
     }
 
-    private fun ContainerBuilder.addressView(model: Model) {
+    private fun ContainerBuilder.addressesView(model: Model) {
         editText {
             textSizeSp(16f)
             hint("Shipping address for item #${model.shippingAddresses.size + 1}")
@@ -99,21 +103,27 @@ object FlowExample {
             disabled = !model.isInputValid,
             msg = ToNextStage(Billing))
     }
-
-    private fun String.tryToIntRange(range: IntRange): Int? =
-        toIntOrNull()
-            ?.let { if (it in range) it else null }
-
-    private fun Model.makeBillingMessage(): String = when (itemNumbers) {
-        0 -> "Buy something"
-        1 -> "Item will be shipped to ${shippingAddresses.single()} and billed to $billingAddress"
-        else -> shippingAddresses.joinToString(
-            prefix = "Items will be shipped to ",
-            postfix = " accordingly. All $itemNumbers items will be billed to $billingAddress.")
-    }
 }
 
-typealias Cmd2<T> = (suspend () -> T)?
+object FlowDomain {
+
+    private val numberRegex = Regex("^([1-9]|[1-9][0-9])$")
+    private val notEmptyRegex = Regex("^[^ ]+$")
+
+    fun validate(stage: FlowExample.Stage, x: String): Boolean = when (stage) {
+        Home -> numberRegex
+        Addresses -> notEmptyRegex
+        Billing -> notEmptyRegex
+    }.let(x::matches)
+
+    fun makeBillingMessage(model: Model): String = when (model.itemNumbers) {
+        0 -> "Buy something"
+        1 -> "Item will be shipped to ${model.shippingAddresses.single()} and billed to ${model.billingAddress}"
+        else -> model.shippingAddresses.joinToString(
+            prefix = "Items will be shipped to ",
+            postfix = " accordingly. All ${model.itemNumbers} items will be billed to ${model.billingAddress}.")
+    }
+}
 
 @Suppress("unused")
 class FlowExampleWrapper : ElmFunctions<Model, Msg> {

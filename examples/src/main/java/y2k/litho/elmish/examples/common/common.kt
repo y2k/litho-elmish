@@ -33,6 +33,8 @@ import java.io.IOException
 import java.io.Serializable
 import java.net.URL
 
+typealias Сmd<T> = (suspend () -> T)?
+
 object Styles {
 
     fun label(builder: Text.Builder) {
