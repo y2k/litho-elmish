@@ -2,7 +2,9 @@ package y2k.litho.elmish.experimental
 
 import android.content.Context
 import android.content.ContextWrapper
-import com.facebook.litho.*
+import com.facebook.litho.ClickEvent
+import com.facebook.litho.Component
+import com.facebook.litho.ComponentContext
 import com.facebook.litho.EventHandler
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.android.UI
@@ -12,12 +14,12 @@ import kotlinx.coroutines.experimental.channels.actor
 
 object EventHandler {
 
-    fun attachClickHandler(msg: Any, builder: ComponentLayout.Builder, ctx: ComponentContext) {
+    fun attachClickHandler(msg: Any, builder: Component.ContainerBuilder<*>, ctx: ComponentContext) {
         eventHandler(ctx, msg)
             .let(builder::clickHandler)
     }
 
-    fun attachClickHandler(msg: Any, builder: Component.Builder<*, *>, ctx: ComponentContext) {
+    fun attachClickHandler(msg: Any, builder: Component.Builder<*>, ctx: ComponentContext) {
         eventHandler(ctx, msg)
             .let(builder::clickHandler)
     }
@@ -72,7 +74,7 @@ class LifecycleHandler<TModel, TMsg>(
 
     private lateinit var reloadContext: ComponentContext
 
-    fun onCreateLayout(c: ComponentContext): ComponentLayout? {
+    fun onCreateLayout(c: ComponentContext): Component? {
         reloadContext = c
         return with(functions) {
             Views.column { this.view(model) }.invoke(c).build()

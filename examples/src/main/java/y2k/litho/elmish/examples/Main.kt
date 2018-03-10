@@ -4,7 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.os.Bundle
 import android.os.StrictMode
-import com.facebook.litho.ComponentLayout.ContainerBuilder
+import com.facebook.litho.Component.ContainerBuilder
 import com.facebook.yoga.YogaEdge.ALL
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.withContext
@@ -45,14 +45,14 @@ class ExampleList : ElmFunctions<Model, Msg> {
                 model to Cmd.fromContext({ Navigation.open<ExampleActivity>(msg.e, it) })
         }
 
-    override fun ContainerBuilder.view(model: Model) =
+    override fun ContainerBuilder<*>.view(model: Model) =
         column {
             viewStaticList(model.examples) {
                 viewItem(it)
             }
         }
 
-    private fun ContainerBuilder.viewItem(x: Example) {
+    private fun ContainerBuilder<*>.viewItem(x: Example) {
         text {
             paddingDip(ALL, 8f)
             marginDip(ALL, 2f)

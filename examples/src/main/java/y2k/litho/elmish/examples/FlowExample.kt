@@ -1,17 +1,18 @@
 package y2k.litho.elmish.examples
 
 import android.view.inputmethod.EditorInfo
-import com.facebook.litho.ComponentLayout.ContainerBuilder
+import com.facebook.litho.Component.ContainerBuilder
 import com.facebook.yoga.YogaEdge
 import com.facebook.yoga.YogaJustify
 import y2k.litho.elmish.examples.FlowExample.Model
-import y2k.litho.elmish.examples.FlowExample.Msg
 import y2k.litho.elmish.examples.FlowExample.Msg.InputChanged
 import y2k.litho.elmish.examples.FlowExample.Msg.ToNextStage
 import y2k.litho.elmish.examples.FlowExample.Stage.*
 import y2k.litho.elmish.examples.common.button
 import y2k.litho.elmish.examples.common.Сmd
-import y2k.litho.elmish.experimental.*
+import y2k.litho.elmish.experimental.editText
+import y2k.litho.elmish.experimental.onTextChanged
+import y2k.litho.elmish.experimental.text
 
 object FlowExample {
 
@@ -48,7 +49,7 @@ object FlowExample {
         }
     } to null
 
-    fun ContainerBuilder.view(model: Model) {
+    fun ContainerBuilder<*>.view(model: Model) {
         paddingDip(YogaEdge.ALL, 8f)
         justifyContent(YogaJustify.CENTER)
 
@@ -59,7 +60,7 @@ object FlowExample {
         }
     }
 
-    private fun ContainerBuilder.homeView(model: Model) {
+    private fun ContainerBuilder<*>.homeView(model: Model) {
         editText {
             textSizeSp(16f)
             inputType(EditorInfo.TYPE_CLASS_NUMBER)
@@ -78,7 +79,7 @@ object FlowExample {
         }
     }
 
-    private fun ContainerBuilder.addressesView(model: Model) {
+    private fun ContainerBuilder<*>.addressesView(model: Model) {
         editText {
             textSizeSp(16f)
             hint("Shipping address for item #${model.shippingAddresses.size + 1}")
@@ -92,7 +93,7 @@ object FlowExample {
             msg = ToNextStage(Addresses))
     }
 
-    private fun ContainerBuilder.billingView(model: Model) {
+    private fun ContainerBuilder<*>.billingView(model: Model) {
         editText {
             textSizeSp(16f)
             hint("Billing address")
@@ -122,17 +123,5 @@ object FlowDomain {
         else -> model.shippingAddresses.joinToString(
             prefix = "Items will be shipped to ",
             postfix = " accordingly. All ${model.itemNumbers} items will be billed to ${model.billingAddress}.")
-    }
-}
-
-@Suppress("unused")
-class FlowExampleWrapper : ElmFunctions<Model, Msg> {
-    override fun init(): Pair<Model, Cmd<Msg>> = FlowExample.init().first to Cmd.none()
-    override fun update(model: Model, msg: Msg): Pair<Model, Cmd<Msg>> = FlowExample.update(model, msg).first to Cmd.none()
-    override fun ContainerBuilder.view(model: Model) {
-        val x = this
-        with(FlowExample) {
-            x.view(model)
-        }
     }
 }

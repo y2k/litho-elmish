@@ -3,7 +3,7 @@ package y2k.litho.elmish.experimental
 import com.facebook.drawee.backends.pipeline.Fresco
 import com.facebook.drawee.backends.pipeline.PipelineDraweeControllerBuilder
 import com.facebook.litho.*
-import com.facebook.litho.ComponentLayout.ContainerBuilder
+import com.facebook.litho.Component.ContainerBuilder
 import com.facebook.litho.fresco.FrescoImage
 import com.facebook.litho.widget.*
 
@@ -13,7 +13,7 @@ typealias Contextual<T> = (ComponentContext) -> T
 @Target(AnnotationTarget.TYPE)
 annotation class LithoElmishDslMarker
 
-inline fun <T : Component.Builder<*, *>> T.style(applyStyle: (T) -> Unit) {
+inline fun <T : Component.Builder<*>> T.style(applyStyle: (T) -> Unit) {
     applyStyle(this)
 }
 
@@ -32,52 +32,52 @@ fun EditText.Builder.onTextChanged(msgFactory: (String) -> Any) {
 fun Text.Builder.onClick(msg: Any) =
     EventHandler.attachClickHandler(msg, this, innerContext)
 
-fun ContainerBuilder.onClick(msg: Any) {
+fun ContainerBuilder<*>.onClick(msg: Any) {
     EventHandler.attachClickHandler(msg, this, innerContext)
 }
 
-fun ComponentLayout.ContainerBuilder.child(c: Contextual<Component.Builder<*, *>>) {
+fun ContainerBuilder<*>.child(c: Contextual<Component.Builder<*>>) {
     child(c(innerContext))
 }
 
-fun ComponentLayout.ContainerBuilder.layoutChild(c: Contextual<ComponentLayout.Builder>) {
+fun ContainerBuilder<*>.layoutChild(c: Contextual<Component.Builder<*>>) {
     child(c(innerContext))
 }
 
-fun ComponentLayout.ContainerBuilder.editText(f: (@LithoElmishDslMarker EditText.Builder).() -> Unit) {
+fun ContainerBuilder<*>.editText(f: (@LithoElmishDslMarker EditText.Builder).() -> Unit) {
     child(Views.editText(f))
 }
 
-fun ComponentLayout.ContainerBuilder.text(f: (@LithoElmishDslMarker Text.Builder).() -> Unit) {
+fun ContainerBuilder<*>.text(f: (@LithoElmishDslMarker Text.Builder).() -> Unit) {
     child(Views.text(f))
 }
 
-fun ComponentLayout.ContainerBuilder.progress(f: (@LithoElmishDslMarker Progress.Builder).() -> Unit) {
+fun ContainerBuilder<*>.progress(f: (@LithoElmishDslMarker Progress.Builder).() -> Unit) {
     child(Views.progress(f))
 }
 
-fun ComponentLayout.ContainerBuilder.column(f: (@LithoElmishDslMarker ContainerBuilder).() -> Unit) {
+fun ContainerBuilder<*>.column(f: (@LithoElmishDslMarker ContainerBuilder<*>).() -> Unit) {
     layoutChild(Views.column(f))
 }
 
-fun ComponentLayout.ContainerBuilder.row(f: (@LithoElmishDslMarker ContainerBuilder).() -> Unit) {
+fun ContainerBuilder<*>.row(f: (@LithoElmishDslMarker ContainerBuilder<*>).() -> Unit) {
     layoutChild(Views.row(f))
 }
 
-fun ComponentLayout.ContainerBuilder.recyclerView(f: (@LithoElmishDslMarker Recycler.Builder).() -> Unit) {
+fun ContainerBuilder<*>.recyclerView(f: (@LithoElmishDslMarker Recycler.Builder).() -> Unit) {
     child(Views.recyclerView(f))
 }
 
-fun ComponentLayout.ContainerBuilder.fresco(f: (@LithoElmishDslMarker FrescoImage.Builder).() -> Unit) {
+fun ContainerBuilder<*>.fresco(f: (@LithoElmishDslMarker FrescoImage.Builder).() -> Unit) {
     child(Views.fresco(f))
 }
 
 object Views {
 
-    fun row(f: (@LithoElmishDslMarker ContainerBuilder).() -> Unit): Contextual<ContainerBuilder> =
+    fun row(f: (@LithoElmishDslMarker ContainerBuilder<*>).() -> Unit): Contextual<ContainerBuilder<*>> =
         { context -> Row.create(context).apply(f) }
 
-    fun column(f: (@LithoElmishDslMarker ContainerBuilder).() -> Unit): Contextual<ContainerBuilder> =
+    fun column(f: (@LithoElmishDslMarker ContainerBuilder<*>).() -> Unit): Contextual<ContainerBuilder<*>> =
         { context -> Column.create(context).apply(f) }
 
     fun progress(f: Progress.Builder.() -> Unit): Contextual<Progress.Builder> =
@@ -95,11 +95,3 @@ object Views {
     fun fresco(f: FrescoImage.Builder.() -> Unit): Contextual<FrescoImage.Builder> =
         { context -> FrescoImage.create(context).apply(f) }
 }
-
-@Deprecated("")
-fun recycler(f: Recycler.Builder.() -> Unit): Contextual<ComponentLayout> =
-    { context -> Recycler.create(context).apply(f).buildWithLayout() }
-
-@Deprecated("")
-fun recyclerBuilder(f: Recycler.Builder.() -> Unit): Contextual<Recycler.Builder> =
-    { context -> Recycler.create(context).apply(f) }

@@ -2,7 +2,7 @@ package y2k.litho.elmish.examples
 
 import android.graphics.Color
 import android.graphics.Typeface
-import com.facebook.litho.ComponentLayout.ContainerBuilder
+import com.facebook.litho.Component.ContainerBuilder
 import com.facebook.yoga.YogaEdge
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.immutableListOf
@@ -47,7 +47,7 @@ class GameExample : ElmFunctions<Game, Msg> {
         }
     }
 
-    override fun ContainerBuilder.view(model: Game) {
+    override fun ContainerBuilder<*>.view(model: Game) {
         backgroundColor(0xFFF0F0F0.toInt())
         text {
             textSizeSp(35f)
@@ -66,14 +66,14 @@ class GameExample : ElmFunctions<Game, Msg> {
         }
     }
 
-    private fun ContainerBuilder.buttonBar(g: Game) =
+    private fun ContainerBuilder<*>.buttonBar(g: Game) =
         row {
             button("Deal", Clicked(Deal))
             button("Hit", Clicked(Hit), !Blackjack.isCanHit(g))
             button("Stay", Clicked(Stay), !Blackjack.isCanStay(g))
         }
 
-    private fun ContainerBuilder.handUi(h: Hand) =
+    private fun ContainerBuilder<*>.handUi(h: Hand) =
         column {
             backgroundColor(Color.CYAN)
             marginDip(YogaEdge.RIGHT, 4f)

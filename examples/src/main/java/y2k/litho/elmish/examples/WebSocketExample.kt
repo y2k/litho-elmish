@@ -1,6 +1,6 @@
 package y2k.litho.elmish.examples
 
-import com.facebook.litho.ComponentLayout.ContainerBuilder
+import com.facebook.litho.Component
 import y2k.litho.elmish.examples.WebSocketExample.Model
 import y2k.litho.elmish.examples.WebSocketExample.Msg
 import y2k.litho.elmish.examples.WebSocketExample.Msg.*
@@ -41,7 +41,7 @@ class WebSocketExample : ElmFunctions<Model, Msg> {
                 model.copy(messages = listOf("" + msg.message) + model.messages) to Cmd.none()
         }
 
-    override fun ContainerBuilder.view(model: Model) {
+    override fun Component.ContainerBuilder<*>.view(model: Model) {
         editText {
             textSizeSp(20f)
             text(model.input)
@@ -61,7 +61,7 @@ class WebSocketExample : ElmFunctions<Model, Msg> {
             .map { viewMessage(it) }
     }
 
-    private fun ContainerBuilder.viewMessage(text: String) =
+    private fun Component.ContainerBuilder<*>.viewMessage(text: String) =
         text {
             text(text)
             textSizeSp(20f)

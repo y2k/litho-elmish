@@ -1,6 +1,6 @@
 package y2k.litho.elmish.examples
 
-import com.facebook.litho.ComponentLayout.ContainerBuilder
+import com.facebook.litho.Component.ContainerBuilder
 import com.facebook.yoga.YogaEdge
 import kotlinx.coroutines.experimental.delay
 import y2k.litho.elmish.examples.SearchExample.Model
@@ -47,7 +47,7 @@ class SearchExample : ElmFunctions<Model, Msg> {
                 model.copy(isFlight = false, error = msg.result.message) to Cmd.none()
         }
 
-    override fun ContainerBuilder.view(model: Model) {
+    override fun ContainerBuilder<*>.view(model: Model) {
         column {
             paddingDip(YogaEdge.ALL, 4f)
 

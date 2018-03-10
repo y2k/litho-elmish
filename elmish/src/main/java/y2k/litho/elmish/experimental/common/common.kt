@@ -8,7 +8,7 @@ import com.facebook.litho.widget.RecyclerBinderUpdateCallback
 
 internal fun <T> RecyclerBinder.applyDiff(
     old: List<T>, newItems: List<T>,
-    func: (T) -> Component<*>,
+    func: (T) -> Component,
     compareIds: (T, T) -> Boolean) {
     val renderer = RecyclerBinderUpdateCallback.ComponentRenderer<T> { x, _ ->
         ComponentRenderInfo.create().component(func(x)).build()

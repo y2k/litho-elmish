@@ -1,7 +1,7 @@
 package y2k.litho.elmish.examples
 
 import android.graphics.Color
-import com.facebook.litho.ComponentLayout.ContainerBuilder
+import com.facebook.litho.Component.ContainerBuilder
 import com.facebook.yoga.YogaEdge.ALL
 import kotlinx.coroutines.experimental.delay
 import kotlinx.types.Result
@@ -58,7 +58,7 @@ class FormScreen : ElmFunctions<Model, Msg> {
             inProgress = false) to Cmd.none()
     }
 
-    override fun ContainerBuilder.view(model: Model) {
+    override fun ContainerBuilder<*>.view(model: Model) {
         paddingDip(ALL, 4f)
 
         editTextWithLabel(

@@ -3,8 +3,9 @@ package y2k.litho.elmish.experimental
 import android.app.Activity
 import android.os.Bundle
 import com.facebook.litho.ClickEvent
+import com.facebook.litho.Component
+import com.facebook.litho.Component.ContainerBuilder
 import com.facebook.litho.ComponentContext
-import com.facebook.litho.ComponentLayout
 import com.facebook.litho.LithoView
 import com.facebook.litho.annotations.*
 import com.facebook.litho.widget.TextChangedEvent
@@ -34,7 +35,7 @@ fun <T : ElmFunctions<*, *>> Activity.program(clazz: Class<T>) {
 interface ElmFunctions<TModel, TMsg> {
     fun init(): Pair<TModel, Cmd<TMsg>>
     fun update(model: TModel, msg: TMsg): Pair<TModel, Cmd<TMsg>>
-    fun ComponentLayout.ContainerBuilder.view(model: TModel)
+    fun ContainerBuilder<*>.view(model: TModel)
     fun subscriptions(model: TModel): Sub<TMsg> = Sub.none()
 }
 
@@ -43,7 +44,7 @@ object ElmishApplicationSpec {
 
     @OnCreateLayout
     @JvmStatic
-    fun onCreateLayout(c: ComponentContext): ComponentLayout? =
+    fun onCreateLayout(c: ComponentContext): Component? =
         c.sharedLifecycleHandler.onCreateLayout(c)
 
     @OnUpdateState

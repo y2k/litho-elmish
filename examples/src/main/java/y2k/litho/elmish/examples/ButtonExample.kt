@@ -1,6 +1,6 @@
 package y2k.litho.elmish.examples
 
-import com.facebook.litho.ComponentLayout.ContainerBuilder
+import com.facebook.litho.Component.ContainerBuilder
 import y2k.litho.elmish.examples.ButtonExample.Msg
 import y2k.litho.elmish.examples.ButtonExample.Msg.Decrease
 import y2k.litho.elmish.examples.ButtonExample.Msg.Increase
@@ -21,7 +21,7 @@ class ButtonExample : ElmFunctions<Int, Msg> {
         Decrease -> (model - 1) to Cmd.none()
     }
 
-    override fun ContainerBuilder.view(model: Int) {
+    override fun ContainerBuilder<*>.view(model: Int) {
         text {
             style(Styles::label)
             text("-")

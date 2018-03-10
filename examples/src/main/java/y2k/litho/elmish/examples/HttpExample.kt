@@ -1,6 +1,6 @@
 package y2k.litho.elmish.examples
 
-import com.facebook.litho.ComponentLayout.ContainerBuilder
+import com.facebook.litho.Component.ContainerBuilder
 import kotlinx.types.Result
 import kotlinx.types.Result.Error
 import kotlinx.types.Result.Ok
@@ -41,7 +41,7 @@ class HttpExample : ElmFunctions<Model, Msg> {
         }
     }
 
-    override fun ContainerBuilder.view(model: Model) {
+    override fun ContainerBuilder<*>.view(model: Model) {
         text {
             text(model.topic)
             textSizeSp(40f)

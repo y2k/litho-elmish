@@ -1,6 +1,6 @@
 package y2k.litho.elmish.examples
 
-import com.facebook.litho.ComponentLayout.ContainerBuilder
+import com.facebook.litho.Component.ContainerBuilder
 import kotlinx.coroutines.experimental.delay
 import y2k.litho.elmish.examples.ListExample.Model
 import y2k.litho.elmish.examples.ListExample.Msg
@@ -36,7 +36,7 @@ class ListExample : ElmFunctions<Model, Msg> {
         is ErrorMsg -> log(msg.e, model) to Cmd.none()
     }
 
-    override fun ContainerBuilder.view(model: Model) {
+    override fun ContainerBuilder<*>.view(model: Model) {
         text {
             style(Styles::label)
             text("[${model.rnd}]")

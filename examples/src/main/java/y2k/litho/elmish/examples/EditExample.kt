@@ -1,6 +1,6 @@
 package y2k.litho.elmish.examples
 
-import com.facebook.litho.ComponentLayout.ContainerBuilder
+import com.facebook.litho.Component.ContainerBuilder
 import y2k.litho.elmish.examples.EditExample.Msg
 import y2k.litho.elmish.experimental.*
 
@@ -17,7 +17,7 @@ class EditExample : ElmFunctions<String, Msg> {
     override fun update(model: String, msg: Msg): Pair<String, Cmd<Msg>> =
         msg.value to Cmd.none()
 
-    override fun ContainerBuilder.view(model: String) {
+    override fun ContainerBuilder<*>.view(model: String) {
         editText {
             hint("Text to reverse")
             textSizeSp(30f)

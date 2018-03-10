@@ -6,7 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import com.facebook.drawee.backends.pipeline.Fresco
-import com.facebook.litho.ComponentLayout.ContainerBuilder
+import com.facebook.litho.Component.ContainerBuilder
 import com.facebook.litho.widget.Text
 import com.facebook.soloader.SoLoader
 import com.facebook.yoga.YogaAlign
@@ -44,7 +44,7 @@ object Styles {
     }
 }
 
-fun ContainerBuilder.fullscreenProgress() {
+fun ContainerBuilder<*>.fullscreenProgress() {
     column {
         backgroundRes(R.color.colorPrimary)
         positionType(YogaPositionType.ABSOLUTE)
@@ -59,7 +59,7 @@ fun ContainerBuilder.fullscreenProgress() {
     }
 }
 
-fun ContainerBuilder.button(title: String, msg: Any, disabled: Boolean = false) {
+fun ContainerBuilder<*>.button(title: String, msg: Any, disabled: Boolean = false) {
     text {
         marginDip(YogaEdge.ALL, 2f)
         paddingDip(YogaEdge.ALL, 4f)
@@ -130,7 +130,7 @@ fun <T> ArrayList<T>.removeAll(predicate: (T) -> Boolean, deleteAction: (T) -> U
     }
 }
 
-inline fun <T> ContainerBuilder.viewStaticList(examples: List<T>, f: ContainerBuilder.(T) -> Unit) {
+inline fun <T> ContainerBuilder<*>.viewStaticList(examples: List<T>, f: ContainerBuilder<*>.(T) -> Unit) {
     for (x in examples) {
         f(x)
     }
@@ -185,7 +185,7 @@ object ClassAnalyzer {
         }
 }
 
-fun ContainerBuilder.editTextWithLabel(
+fun ContainerBuilder<*>.editTextWithLabel(
     hint: String, msg: (String) -> Any, error: String?) {
     column {
         editText {
